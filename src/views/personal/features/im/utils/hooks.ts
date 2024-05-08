@@ -4,6 +4,7 @@ import { message } from "@/utils/message";
 import dayjs from "dayjs";
 import { ref } from "vue";
 import { storageLocal } from "@pureadmin/utils";
+import { getWsLogList } from "@/api/system/monitor";
 
 const message_dict = ref({});
 
@@ -52,18 +53,73 @@ export const SaveData = ref({
 });
 
 // 连接ws
-export function connectWs(ws_url) {
-  socket.init(ws_url, onMessage, null, () => {
+export const connectWs = async ws_url => {
+  await socket.init(ws_url, onMessage, null, async () => {
     ws_status.value = true;
     message("连接建立成功", { type: "success" });
+
+    try {
+      const response = await getWsLogList();
+      const { data } = response;
+
+      data.map(logEntry => {
+        pushLog(logEntry);
+      });
+    } catch (error) {
+      console.error("获取日志列表时发生错误:", error);
+    }
   });
-}
+};
 
 // 断开ws
 export function CloseWs() {
   socket.close();
   ws_status.value = false;
   message("连接已断开", { type: "warning" });
+}
+
+function pushLog(params) {
+  const event_name = params.event_name;
+  const bot_id = params.bot_id;
+  let event_type = "";
+  let level = "";
+  let message = "";
+
+  switch (event_name) {
+    case "message":
+      level = "info";
+      event_type = params.message?.message_type;
+      message = params.message.raw_message;
+      break;
+    case "send_msg":
+      level = "success";
+      event_type = params.message?.message_type;
+      message = makeMessage(params.message.message);
+      break;
+    case "notice":
+      level = "warning";
+      event_type = params.message?.notice_type;
+      message = "";
+      break;
+    case "request":
+      level = "debug";
+      event_type = params.message?.request_type;
+      message = "";
+      break;
+    default:
+      level = "info";
+      event_type = "info";
+  }
+  const log = {
+    level: level,
+    bot: bot_id,
+    time: dayjs(params.time).format("MM-DD HH:mm:ss"),
+    name: event_name,
+    type: event_type,
+    data: params.message,
+    message: message.length > 50 ? `${message.slice(0, 57)}...` : message
+  };
+  logs.value.push(log);
 }
 
 const onMessage = (msg_event: { data: string }) => {
@@ -83,47 +139,7 @@ const onMessage = (msg_event: { data: string }) => {
     recordContent.value.push(answer);
     storageLocal().setItem("wsChatData", recordContent.value);
   } else if (action == "make_log") {
-    const event_name = json_data.params.event_name;
-    const bot_id = json_data.params.bot_id;
-    let event_type = "";
-    let level = "";
-    let message = "";
-
-    switch (event_name) {
-      case "message":
-        level = "info";
-        event_type = json_data.params.message?.message_type;
-        message = json_data.params.message.raw_message;
-        break;
-      case "send_msg":
-        level = "success";
-        event_type = json_data.params.message?.message_type;
-        message = makeMessage(json_data.params.message.message);
-        break;
-      case "notice":
-        level = "warning";
-        event_type = json_data.params.message?.notice_type;
-        message = "";
-        break;
-      case "request":
-        level = "debug";
-        event_type = json_data.params.message?.request_type;
-        message = "";
-        break;
-      default:
-        level = "info";
-        event_type = "info";
-    }
-    const log = {
-      level: level,
-      bot: bot_id,
-      time: dayjs().format("MM-DD HH:mm:ss"),
-      name: event_name,
-      type: event_type,
-      data: json_data.params.message,
-      message: message.length > 50 ? `${message.slice(0, 47)}...` : message
-    };
-    logs.value.push(log);
+    pushLog(json_data.params);
   }
 };
 

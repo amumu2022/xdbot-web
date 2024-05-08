@@ -18,6 +18,11 @@ export const getServerInfoApi = () => {
   return http.request<ServerInfo>("get", "/api/v1/monitor/serverInfo");
 };
 
+/** 获取wsLog日志列表 */
+export const getWsLogList = () => {
+  return http.request<ResultDetail>("get", "/api/v1/ws/log/list");
+};
+
 /** 获取API操作日志列表 */
 export const getApiList = (data?: object) => {
   return http.request<Result>("post", "/api/v1/monitor/ApiLog/list", {

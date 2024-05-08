@@ -1,7 +1,7 @@
 <!--
  * @Author: xdteam
  * @Date: 2024-05-05 23:07:11
- * @LastEditTime: 2024-05-08 00:33:50
+ * @LastEditTime: 2024-05-08 21:44:25
  * @LastEditors: YourName
  * @Description: 
  * @FilePath: \vue-pure-admin\src\views\personal\features\ai\index.vue
@@ -23,7 +23,7 @@
       </div>
     </template>
     <div class="parent-container">
-      <el-scrollbar>
+      <el-scrollbar ref="scrollbar">
         <div class="log-container">
           <div
             v-for="(log, index) in logs"
@@ -40,13 +40,14 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { logs, connectWs, ws_status } from "../im/utils/hooks";
 import { useRouter } from "vue-router";
 import { storageLocal } from "@pureadmin/utils";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 const router = useRouter();
+const scrollbar = ref(null);
 
 // 跳转页面
 function TurnTO() {
@@ -101,7 +102,7 @@ function logger(logData) {
     text += `的消息：${logData.message}`;
   } else if (logData.name == "message") {
     text += `收到${type === "group" ? "群聊" : "私聊"}`;
-    text += `  (${type === "group" ? group_id : group_id}) `;
+    text += `  (${type === "group" ? group_id : user_id}) `;
     text += `内 ${logData.data?.sender.nickname}(${logData.data?.sender.user_id}) 的消息： ${logData.message} ${logData.data?.message_id}`;
   } else if (logData.name == "notice") {
     text += makeNotice(type, user_id, group_id, logData.data);
