@@ -340,200 +340,196 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-card>
-    <el-container>
-      <el-aside v-if="!isMobile" :class="[show ? 'mobile' : 'pc']">
-        <div
-          style="display: flex; justify-content: center; align-items: center"
+  <el-container>
+    <el-aside v-if="!isMobile" :class="[show ? 'mobile' : 'pc']">
+      <div style="display: flex; justify-content: center; align-items: center">
+        <el-button class="new_chat" @click="handleNew"> + 新增 </el-button>
+
+        <el-button
+          v-if="!isMobile"
+          :icon="Fold"
+          @click="toggleAside"
+          style="
+            float: right;
+            border: none;
+            outline: none;
+            background-color: transparent;
+            margin-right: 10px;
+          "
+        />
+      </div>
+      <el-col>
+        <el-menu
+          active-text-color="#4b9e5f"
+          :default-active="chatID"
+          style="background-color: transparent"
         >
-          <el-button class="new_chat" @click="handleNew"> + 新增 </el-button>
-
-          <el-button
-            v-if="!isMobile"
-            :icon="Fold"
-            @click="toggleAside"
-            style="
-              float: right;
-              border: none;
-              outline: none;
-              background-color: transparent;
-              margin-right: 10px;
-            "
-          />
-        </div>
-        <el-col>
-          <el-menu
-            active-text-color="#4b9e5f"
-            :default-active="chatID"
-            style="background-color: transparent"
+          <el-menu-item
+            v-for="item in menuItemsData"
+            :key="item.id"
+            :index="item.id.toString()"
+            class="menu-item-background"
+            @click="handleClick(item)"
           >
-            <el-menu-item
-              v-for="item in menuItemsData"
-              :key="item.id"
-              :index="item.id.toString()"
-              class="menu-item-background"
-              @click="handleClick(item)"
-            >
-              <el-icon><Comment /></el-icon>
-              <span> {{ item.text }}</span>
-            </el-menu-item>
-          </el-menu>
-        </el-col>
-      </el-aside>
-      <el-container style="height: 85vh; display: flex; flex-direction: column">
-        <el-header>
-          <el-button
-            v-if="isMobile"
-            :icon="Expand"
-            @click="toggleAside"
-            style="
-              float: right;
-              border: none;
-              outline: none;
-              background-color: transparent;
-            "
-          />
-          <span>XD 聊天沙盒</span>
-          <span style="color: rgb(30, 206, 88)">{{ model }}</span>
-        </el-header>
+            <el-icon><Comment /></el-icon>
+            <span> {{ item.text }}</span>
+          </el-menu-item>
+        </el-menu>
+      </el-col>
+    </el-aside>
+    <el-container style="height: 85vh; display: flex; flex-direction: column">
+      <el-header style="margin-top: 20px">
+        <el-button
+          v-if="isMobile"
+          :icon="Expand"
+          @click="toggleAside"
+          style="
+            float: right;
+            border: none;
+            outline: none;
+            background-color: transparent;
+          "
+        />
+        <span>XD 聊天沙盒</span>
+        <span style="color: rgb(30, 206, 88)">{{ model }}</span>
+      </el-header>
 
-        <el-main>
-          <div class="chat-content">
-            <!-- 遍历消息记录 -->
-            <div v-for="(itemc, indexc) in recordContent" :key="indexc">
-              <!-- 对方 -->
-              <div v-if="!itemc.mineMsg" class="word">
-                <img class="avatar" :src="chatgpt" />
-                <div class="info">
-                  <p class="time">{{ itemc.nickName }} {{ itemc.time }}</p>
+      <el-main>
+        <div class="chat-content">
+          <!-- 遍历消息记录 -->
+          <div v-for="(itemc, indexc) in recordContent" :key="indexc">
+            <!-- 对方 -->
+            <div v-if="!itemc.mineMsg" class="word">
+              <img class="avatar" :src="chatgpt" />
+              <div class="info">
+                <p class="time">{{ itemc.nickName }} {{ itemc.time }}</p>
 
-                  <!-- 消息气泡 -->
-                  <div
-                    class="info-content bubble"
-                    :style="{ background: SendData.bubble2 }"
+                <!-- 消息气泡 -->
+                <div
+                  class="info-content bubble"
+                  :style="{ background: SendData.bubble2 }"
+                >
+                  <!-- 遍历每条消息的内容 -->
+                  <template
+                    v-for="(message, index) in itemc.messages"
+                    :key="index"
                   >
-                    <!-- 遍历每条消息的内容 -->
-                    <template
-                      v-for="(message, index) in itemc.messages"
-                      :key="index"
+                    <!-- 文字信息 -->
+                    <div v-if="message.type === 'text'" class="text-message">
+                      {{ message.content }}
+                    </div>
+                    <!-- 图片信息 -->
+                    <el-image
+                      v-else-if="message.type === 'image'"
+                      class="chat-image"
+                      :src="message.content"
+                      :preview-src-list="[message.content]"
+                    />
+                    <!-- 视频信息 -->
+                    <video
+                      v-else-if="message.type === 'video'"
+                      controls
+                      width="300"
+                      class="video-message"
                     >
-                      <!-- 文字信息 -->
-                      <div v-if="message.type === 'text'" class="text-message">
-                        {{ message.content }}
-                      </div>
-                      <!-- 图片信息 -->
-                      <el-image
-                        v-else-if="message.type === 'image'"
-                        class="chat-image"
-                        :src="message.content"
-                        :preview-src-list="[message.content]"
+                      <source :src="message.content" type="video/mp4" />
+                    </video>
+                    <!-- 音频信息 -->
+                    <div
+                      v-else-if="message.type === 'audio'"
+                      class="audio-container"
+                    >
+                      <audio controls class="aud" style="outline: none">
+                        <source :src="message.content" type="audio/mpeg" />
+                      </audio>
+                    </div>
+
+                    <!-- 其他 -->
+                    <div
+                      v-else-if="message.type === 'chatgpt'"
+                      class="audio-container"
+                    >
+                      <md-editor
+                        v-model="message.content"
+                        preview-only
+                        showCodeRowNumber
                       />
-                      <!-- 视频信息 -->
-                      <video
-                        v-else-if="message.type === 'video'"
-                        controls
-                        width="300"
-                        class="video-message"
-                      >
-                        <source :src="message.content" type="video/mp4" />
-                      </video>
-                      <!-- 音频信息 -->
-                      <div
-                        v-else-if="message.type === 'audio'"
-                        class="audio-container"
-                      >
-                        <audio controls class="aud" style="outline: none">
-                          <source :src="message.content" type="audio/mpeg" />
-                        </audio>
-                      </div>
-
-                      <!-- 其他 -->
-                      <div
-                        v-else-if="message.type === 'chatgpt'"
-                        class="audio-container"
-                      >
-                        <md-editor
-                          v-model="message.content"
-                          preview-only
-                          showCodeRowNumber
-                        />
-                      </div>
-                    </template>
-                  </div>
+                    </div>
+                  </template>
                 </div>
-              </div>
-              <!-- 我的 -->
-              <div class="word-my" v-else>
-                <div class="info">
-                  <p class="time">{{ itemc.nickName }} {{ itemc.time }}</p>
-
-                  <div
-                    class="info-content bubble"
-                    :style="{ background: SendData.bubble1 }"
-                  >
-                    {{ itemc.content }}
-                  </div>
-                </div>
-
-                <img class="avatar" :src="itemc.headUrl" />
               </div>
             </div>
-          </div>
-        </el-main>
+            <!-- 我的 -->
+            <div class="word-my" v-else>
+              <div class="info">
+                <p class="time">{{ itemc.nickName }} {{ itemc.time }}</p>
 
-        <el-footer height="150px">
-          <el-row class="low-row" style="width: 100%">
-            <el-col :span="24">
-              <el-row>
-                <el-button type="success" :icon="Tools" circle />
-                <el-button
-                  type="info"
-                  :icon="Tools"
-                  circle
-                  @click="SettingClick"
-                />
-                <el-button
-                  type="primary"
-                  :icon="Share"
-                  circle
-                  @click="exportMsg"
-                />
-
-                <el-popconfirm
-                  title="是否删除对话?"
-                  @confirm="delMsgEx"
-                  @cancel="delMsg"
-                  confirm-button-type="danger"
-                  cancel-button-type="warning"
+                <div
+                  class="info-content bubble"
+                  :style="{ background: SendData.bubble1 }"
                 >
-                  <template #reference>
-                    <el-button type="danger" :icon="Delete" circle />
-                  </template>
-                </el-popconfirm>
-              </el-row>
-            </el-col>
+                  {{ itemc.content }}
+                </div>
+              </div>
 
-            <el-input
-              v-model="inputText"
-              class="chat-input"
-              :rows="4"
-              type="textarea"
-              placeholder="请输入内容..."
-              @keydown.ctrl.enter="sendMsg"
-            />
-          </el-row>
-        </el-footer>
-      </el-container>
+              <img class="avatar" :src="itemc.headUrl" />
+            </div>
+          </div>
+        </div>
+      </el-main>
+
+      <el-footer height="150px">
+        <el-row class="low-row" style="width: 100%">
+          <el-col :span="24">
+            <el-row>
+              <el-button type="success" :icon="Tools" circle />
+              <el-button
+                type="info"
+                :icon="Tools"
+                circle
+                @click="SettingClick"
+              />
+              <el-button
+                type="primary"
+                :icon="Share"
+                circle
+                @click="exportMsg"
+              />
+
+              <el-popconfirm
+                title="是否删除对话?"
+                @confirm="delMsgEx"
+                @cancel="delMsg"
+                confirm-button-type="danger"
+                cancel-button-type="warning"
+              >
+                <template #reference>
+                  <el-button type="danger" :icon="Delete" circle />
+                </template>
+              </el-popconfirm>
+            </el-row>
+          </el-col>
+
+          <el-input
+            v-model="inputText"
+            class="chat-input"
+            :rows="4"
+            type="textarea"
+            placeholder="请输入内容..."
+            @keydown.ctrl.enter="sendMsg"
+          />
+        </el-row>
+      </el-footer>
     </el-container>
+  </el-container>
 
-    <el-button
-      type="success"
-      :icon="Promotion"
-      @click="sendMsg"
-      class="send-button-fixed"
-      >发送</el-button
-    >
-  </el-card>
+  <el-button
+    type="success"
+    :icon="Promotion"
+    @click="sendMsg"
+    class="send-button-fixed"
+    >发送</el-button
+  >
 </template>
 
 <style>

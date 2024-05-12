@@ -17,11 +17,12 @@ interface FormItemProps {
 }
 
 /**
- * 全局-分群管理
+ * 全局-全局管理
  */
 export interface GroupSet {
   bot_id?: string;
   host?: string;
+  email?: string;
   adjutantList?: any;
   update_switch?: boolean;
 }

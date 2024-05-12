@@ -11,6 +11,7 @@ const props = withDefaults(defineProps<FormProps>(), {
     group: {
       bot_id: "",
       host: "",
+      email: "",
       adjutantList: [],
       update_switch: false
     },
@@ -267,7 +268,15 @@ watch(adjutantOptions, newValue => {
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="更新提醒" prop="update_switch">
+            <el-form-item label="用户邮箱" prop="email">
+              <el-input
+                v-model="newFormInline.group.email"
+                placeholder="请输入用户邮箱"
+                type="text"
+                clearable
+              />
+            </el-form-item>
+            <!-- <el-form-item label="更新提醒" prop="update_switch">
               <el-switch
                 v-model="newFormInline.group.update_switch"
                 inline-prompt
@@ -275,7 +284,7 @@ watch(adjutantOptions, newValue => {
                 active-text="已开启"
                 inactive-text="已关闭"
               />
-            </el-form-item>
+            </el-form-item> -->
           </el-col>
         </el-row>
       </el-card>

@@ -1,7 +1,7 @@
 <!--
  * @Author: xdteam
  * @Date: 2024-05-05 23:07:11
- * @LastEditTime: 2024-05-08 21:44:25
+ * @LastEditTime: 2024-05-09 20:14:21
  * @LastEditors: YourName
  * @Description: 
  * @FilePath: \vue-pure-admin\src\views\personal\features\ai\index.vue
@@ -91,7 +91,7 @@ function get() {
 
 // 生成日志
 function logger(logData) {
-  let text = `${logData.time} [${logData.level}] ${logData.bot}:`;
+  let text = `${logData.time} [${logData.level}] ${logData.bot} -> `;
   const type = logData.type;
   const group_id = logData.data?.group_id;
   const user_id = logData.data?.user_id;

@@ -117,7 +117,7 @@ function pushLog(params) {
     name: event_name,
     type: event_type,
     data: params.message,
-    message: message.length > 50 ? `${message.slice(0, 57)}...` : message
+    message: message.length > 50 ? `${message.slice(0, 47)}...` : message
   };
   logs.value.push(log);
 }

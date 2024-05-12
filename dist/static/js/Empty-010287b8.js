@@ -1,0 +1,1 @@
+import{_ as o,r as t,o as c,i as n}from"./index-6f723797.js";const r={};function s(_,p){const e=t("el-empty");return c(),n(e,{description:"description"})}const i=o(r,[["render",s]]);export{i as default};
