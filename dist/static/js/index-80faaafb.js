@@ -1,1 +1,0 @@
-import{d as s,ae as a,a_ as l}from"./index-6f723797.js";const r=s({name:"ReCol",props:{value:{type:Number,default:24}},render(){const e=this.$attrs,t=this.value;return a(l,{xs:t,sm:t,md:t,lg:t,xl:t,...e},{default:()=>this.$slots.default()})}});export{r as R};
