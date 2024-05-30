@@ -15,7 +15,7 @@ interface CardProductType {
   path: string;
   score: number;
   downloads: number;
-  isSetup: boolean;
+  enable: boolean;
 }
 
 const props = defineProps({
@@ -62,7 +62,7 @@ const handleClickInstall = (product: CardProductType) => {
 };
 const cardClass = computed(() => [
   "list-card-item",
-  { "list-card-item__disabled": !props.product.isSetup }
+  { "list-card-item__disabled": !props.product.enable }
 ]);
 
 const score_value = props.product.score;
@@ -86,11 +86,11 @@ const score_value = props.product.score;
         </div>
         <div class="list-card-item_detail--operation">
           <el-tag
-            :color="product.isSetup ? '#00a870' : '#eee'"
+            :color="product.enable ? '#00a870' : '#eee'"
             effect="dark"
             class="mx-1 list-card-item_detail--operation--tag"
           >
-            {{ product.isSetup ? "已启用" : "已停用" }}
+            {{ product.enable ? "已启用" : "已停用" }}
           </el-tag>
         </div>
         <el-dropdown trigger="click">
@@ -107,7 +107,7 @@ const score_value = props.product.score;
                 更新
               </el-dropdown-item>
               <el-dropdown-item @click="handleClickStop(product)">
-                {{ product.isSetup ? "停用" : "启用" }}
+                {{ product.enable ? "停用" : "启用" }}
               </el-dropdown-item>
               <el-dropdown-item @click="handleClickDelete(product)">
                 卸载

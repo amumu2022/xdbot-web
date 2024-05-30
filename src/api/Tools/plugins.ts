@@ -8,7 +8,7 @@ export const getPluginsAllList = (data?: object) => {
 
 /** 获取插件列表 */
 export const getPluginsList = (data?: object) => {
-  return http.request<MockDetail>("post", "/api/v1/plugins/add", { data });
+  return http.request<MockDetail>("post", "/api/v1/plugins/list", { data });
 };
 
 /** 插件添加 */
@@ -21,6 +21,13 @@ export const createPluginsApi = (data?: object) => {
 /** 插件删除 */
 export const deletePluginsApi = (data?: object) => {
   return http.request<ResultDetail>("delete", "/api/v1/plugins/del", {
+    data: data
+  });
+};
+
+/** 插件更新 */
+export const UpdatePluginsApi = (data?: object) => {
+  return http.request<ResultDetail>("post", "/api/v1/plugins/update", {
     data: data
   });
 };

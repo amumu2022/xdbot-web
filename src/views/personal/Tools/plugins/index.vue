@@ -10,6 +10,7 @@ import { downloadByUrl } from "@pureadmin/utils";
 
 import {
   getPluginsList,
+  UpdatePluginsApi,
   getPluginsAllList,
   createPluginsApi,
   deletePluginsApi,
@@ -21,7 +22,8 @@ const formRef = ref();
 
 const form = reactive({
   name: "",
-  enable: ""
+  installed: "1",
+  enable: undefined
 });
 
 const searchStatus = ref(false);
@@ -29,19 +31,52 @@ const productList = ref([]);
 
 const pagination = ref({ current: 1, pageSize: 12, total: 0 });
 
+// 筛选已经安装的插件
+function completeInstalledPlugins(
+  allPlugins: any[],
+  installedPlugins: any[]
+): Array<{ [key: string]: any }> {
+  const pluginMap = new Map(allPlugins.map(plugin => [plugin.name, plugin]));
+
+  return installedPlugins.map(installedPlugin => {
+    const fullPlugin = pluginMap.get(installedPlugin.name);
+
+    if (fullPlugin) {
+      return { ...fullPlugin, ...installedPlugin };
+    }
+
+    return installedPlugin;
+  });
+}
+
 async function onSearch() {
   try {
-    loading.value = true;
     const post_data = toRaw(form);
     const name = post_data.name;
-    // const enable = post_data.enable;
+    const enable = post_data.enable;
+    if (enable == "") {
+      post_data.enable = undefined;
+    }
+    const installedPluginsData = await getPluginsList(toRaw(form));
+    const installedPlugins = installedPluginsData.data.results;
+
+    const installed = post_data.installed;
     const { data } = await getPluginsAllList();
+
     productList.value = data.list.filter(product =>
       product.name.includes(name)
     );
+
+    if (installed === "1") {
+      productList.value = completeInstalledPlugins(
+        productList.value,
+        installedPlugins
+      );
+    }
+
     pagination.value = {
       ...pagination.value,
-      total: data.list.length
+      total: productList.value.length
     };
   } catch (e) {
     console.log(e);
@@ -58,28 +93,30 @@ const onPageSizeChange = (size: number) => {
 };
 const onCurrentChange = (current: number) => {
   pagination.value.current = current;
-
-  const aa = productList.value
-    .slice(
-      pagination.value.pageSize * (pagination.value.current - 1),
-      pagination.value.pageSize * pagination.value.current
-    )
-    .filter(v => v.name.toLowerCase().includes(form.name.toLowerCase()));
-
-  console.log(aa);
 };
 
 const handleClickDetial = product => {
-  console.log(product);
+  message(`还在开发进程中`, { type: "error" });
 };
 const handleClickUpdate = product => {
-  console.log(product);
+  UpdatePluginsApi(product).then(async res => {
+    if (res.code === 200) {
+      message(`插件 ${product.name} 更新成功`, { type: "success" });
+      onSearch();
+    } else {
+      message(`操作失败，${res.message}`, { type: "error" });
+    }
+  });
 };
 
 const handleClickStop = product => {
+  const enable = product.enable;
   UpdatePlugins_status(product).then(async res => {
     if (res.code === 200) {
-      message(`插件 ${product.name} 已停用`, { type: "success" });
+      message(`插件 ${product.name} ${enable ? "已停用" : "已启用"}`, {
+        type: "success"
+      });
+      onSearch();
     } else {
       message(`操作失败，${res.message}`, { type: "error" });
     }
@@ -87,13 +124,14 @@ const handleClickStop = product => {
 };
 
 const handleClickReport = product => {
-  console.log(product);
+  message(`插件 ${product.name} 举报失败`, { type: "error" });
 };
 
 const handleClickDelete = product => {
   deletePluginsApi(product).then(async res => {
     if (res.code === 200) {
       message(`插件 ${product.name} 卸载成功`, { type: "warning" });
+      onSearch();
     } else {
       message(`操作失败，${res.message}`, { type: "error" });
     }
@@ -111,18 +149,21 @@ const handleClickDownloads = product => {
 
   document.body.removeChild(link);
   // downloadByUrl(product.url, "x.py");
-  console.log(product.url);
 };
 
 const handleClickInstall = product => {
   createPluginsApi(product).then(async res => {
     if (res.code === 200) {
       message(`插件 ${product.name} 安装成功`, { type: "success" });
+      onSearch();
     } else {
       message(`操作失败，${res.message}`, { type: "error" });
     }
   });
+
+  onSearch();
 };
+
 const resetForm = formEl => {
   if (!formEl) return;
   formEl.resetFields();
@@ -188,6 +229,20 @@ const svg = `
             <el-option label="已停用" value="0" />
           </el-select>
         </el-form-item>
+
+        <el-form-item label="安装情况：" prop="installed">
+          <el-select
+            v-model="form.installed"
+            placeholder="请选择"
+            clearable
+            class="!w-[160px]"
+            @change="onSearch()"
+          >
+            <el-option label="已安装" value="1" />
+            <el-option label="全部插件" value="0" />
+          </el-select>
+        </el-form-item>
+
         <el-form-item>
           <el-button
             type="primary"

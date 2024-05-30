@@ -58,8 +58,6 @@ function RenderingSwip() {
     data.results.forEach(item => {
       if (!isExpired(item.end_time)) {
         updatedPicList.push(item);
-      } else {
-        console.log(item);
       }
     });
     pic_list.value = updatedPicList;

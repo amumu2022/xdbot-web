@@ -1,7 +1,7 @@
 /*
  * @Author: xdteam
  * @Date: 2024-05-27 22:11:19
- * @LastEditTime: 2024-05-29 21:13:39
+ * @LastEditTime: 2024-05-30 21:30:41
  * @LastEditors: YourName
  * @Description:
  * @FilePath: \vue-pure-admin\mock\local.ts
@@ -19,8 +19,8 @@ export default [
         data: {
           list: [
             {
-              name: "通用签到",
-              version: "1.0.0",
+              name: "小墩通用签到",
+              version: "1.0.1",
               author: "a木木",
               type: "日常",
               folder: "daily_sign",
@@ -29,8 +29,7 @@ export default [
               url: "http://127.0.0.1:31400/static/upload/other/0cdbf3a82a1268ed41875a9fbcdf32a6.py",
               path: "string",
               score: 3.2,
-              downloads: 986,
-              isSetup: true
+              downloads: 986
             },
             {
               name: "QQ等级加速",
@@ -43,8 +42,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.3,
-              downloads: 745,
-              isSetup: true
+              downloads: 745
             },
             {
               name: "阿里云扫码签到",
@@ -57,8 +55,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.7,
-              downloads: 256,
-              isSetup: true
+              downloads: 256
             },
             {
               name: "云主机签到服务",
@@ -85,8 +82,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.4,
-              downloads: 751,
-              isSetup: true
+              downloads: 751
             },
             {
               name: "哔哩哔哩解析",
@@ -99,8 +95,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.3,
-              downloads: 1233,
-              isSetup: true
+              downloads: 1233
             },
             {
               name: "通用签到",
@@ -113,8 +108,7 @@ export default [
               url: "http://127.0.0.1:31400/static/upload/other/0cdbf3a82a1268ed41875a9fbcdf32a6.py",
               path: "string",
               score: 3.2,
-              downloads: 986,
-              isSetup: true
+              downloads: 986
             },
             {
               name: "QQ等级加速",
@@ -127,8 +121,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.3,
-              downloads: 745,
-              isSetup: true
+              downloads: 745
             },
             {
               name: "阿里云扫码签到",
@@ -141,8 +134,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.7,
-              downloads: 256,
-              isSetup: true
+              downloads: 256
             },
             {
               name: "云主机签到服务",
@@ -169,8 +161,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.4,
-              downloads: 751,
-              isSetup: true
+              downloads: 751
             },
             {
               name: "哔哩哔哩解析",
@@ -183,8 +174,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.3,
-              downloads: 1233,
-              isSetup: true
+              downloads: 1233
             },
             {
               name: "通用签到",
@@ -197,8 +187,7 @@ export default [
               url: "http://127.0.0.1:31400/static/upload/other/0cdbf3a82a1268ed41875a9fbcdf32a6.py",
               path: "string",
               score: 3.2,
-              downloads: 986,
-              isSetup: true
+              downloads: 986
             },
             {
               name: "QQ等级加速",
@@ -211,8 +200,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.3,
-              downloads: 745,
-              isSetup: true
+              downloads: 745
             },
             {
               name: "阿里云扫码签到",
@@ -225,8 +213,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.7,
-              downloads: 256,
-              isSetup: true
+              downloads: 256
             },
             {
               name: "云主机签到服务",
@@ -253,8 +240,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.4,
-              downloads: 751,
-              isSetup: true
+              downloads: 751
             },
             {
               name: "通用签到",
@@ -267,8 +253,7 @@ export default [
               url: "http://127.0.0.1:31400/static/upload/other/0cdbf3a82a1268ed41875a9fbcdf32a6.py",
               path: "string",
               score: 3.2,
-              downloads: 986,
-              isSetup: true
+              downloads: 986
             },
             {
               name: "QQ等级加速",
@@ -281,8 +266,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.3,
-              downloads: 745,
-              isSetup: true
+              downloads: 745
             },
             {
               name: "云主机签到服务",
@@ -309,8 +293,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.4,
-              downloads: 751,
-              isSetup: true
+              downloads: 751
             },
             {
               name: "哔哩哔哩解析",
@@ -323,8 +306,7 @@ export default [
               url: "https://q1.qlogo.cn/g?b=qq&nk=651380741&s=640",
               path: "string",
               score: 4.3,
-              downloads: 1233,
-              isSetup: true
+              downloads: 1233
             }
           ]
         }

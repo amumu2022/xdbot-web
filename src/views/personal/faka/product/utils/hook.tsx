@@ -238,15 +238,11 @@ export function useRole(tableRef: Ref) {
   /** 取消选择 */
   function onSelectionCancel() {
     selectedNum.value = 0;
-    // 用于多选表格，清空商品的选择
     tableRef.value.getTableRef().clearSelection();
   }
 
-  /** 批量删除 */
   function onbatchDel() {
-    // 返回当前选中的行
     const curSelected = tableRef.value.getTableRef().getSelectionRows();
-    // 接下来根据实际业务，通过选中行的某项数据，比如下面的id，调用接口进行批量删除
     manyDeleteProductApi(getKeyList(curSelected, "id")).then(async res => {
       if (res.code === 200) {
         message(`已删除商品编号为 ${getKeyList(curSelected, "id")} 的数据`, {
