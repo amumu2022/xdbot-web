@@ -201,13 +201,13 @@ export function useRole() {
         getFileContent(post_date).then(async res => {
           if (res.code === 200) {
             row.content = res.data;
-
             addDialog({
               title: `${title}文件`,
               props: {
                 formInline: {
                   title,
                   content: row?.content ?? "",
+                  extension: row?.extension ?? "",
                   name: row?.name ?? "",
                   parent_path: row?.parent_path ?? "",
                   path: row?.path ?? ""

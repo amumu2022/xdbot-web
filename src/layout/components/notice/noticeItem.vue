@@ -1,35 +1,36 @@
 <script setup lang="ts">
 import { ListItem } from "./data";
-import { ref, PropType, nextTick } from "vue";
+import { ref, PropType } from "vue";
 import { useNav } from "@/layout/hooks/useNav";
-import { deviceDetection } from "@pureadmin/utils";
-
+import { message } from "@/utils/message";
+import { useRenderIcon } from "@/components/ReIcon/src/hooks";
+import Copy from "@iconify-icons/ep/copy-document";
 const props = defineProps({
   noticeItem: {
     type: Object as PropType<ListItem>,
     default: () => {}
   }
 });
-
-const titleRef = ref(null);
-const titleTooltip = ref(false);
-const descriptionRef = ref(null);
-const descriptionTooltip = ref(false);
+import { useCopyToClipboard } from "@pureadmin/utils";
+const { clipboardValue, copied } = useCopyToClipboard();
+const messageRef = ref(null);
+const messageTooltip = ref(false);
 const { tooltipEffect } = useNav();
-const isMobile = deviceDetection();
 
-function hoverTitle() {
-  nextTick(() => {
-    titleRef.value?.scrollWidth > titleRef.value?.clientWidth
-      ? (titleTooltip.value = true)
-      : (titleTooltip.value = false);
-  });
-}
+// 复制链接
+const copyLinks = text => {
+  clipboardValue.value = text;
+  if (copied.value) {
+    message(`消息内容已复制`, { type: "success" });
+  } else {
+    message(`消息内容复制失败`, { type: "error" });
+  }
+};
 
-function hoverDescription(event, description) {
+function hoverDescription(event, message) {
   // currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除
   const tempTag = document.createElement("span");
-  tempTag.innerText = description;
+  tempTag.innerText = message;
   tempTag.className = "getDescriptionWidth";
   document.querySelector("body").appendChild(tempTag);
   const currentWidth = (
@@ -39,11 +40,10 @@ function hoverDescription(event, description) {
 
   // cellWidth为容器的宽度
   const cellWidth = event.target.offsetWidth;
-
-  // 当文本宽度大于容器宽度两倍时，代表文本显示超过两行
+  // 当文本宽度大于容器宽度两倍时，代表文本显示超过4行
   currentWidth > 2 * cellWidth
-    ? (descriptionTooltip.value = true)
-    : (descriptionTooltip.value = false);
+    ? (messageTooltip.value = true)
+    : (messageTooltip.value = false);
 }
 </script>
 
@@ -51,58 +51,52 @@ function hoverDescription(event, description) {
   <div
     class="notice-container border-b-[1px] border-solid border-[#f0f0f0] dark:border-[#303030]"
   >
-    <el-avatar
-      v-if="props.noticeItem.avatar"
-      :size="30"
-      :src="props.noticeItem.avatar"
-      class="notice-container-avatar"
-    />
     <div class="notice-container-text">
       <div class="notice-text-title text-[#000000d9] dark:text-white">
-        <el-tooltip
-          popper-class="notice-title-popper"
-          :effect="tooltipEffect"
-          :disabled="!titleTooltip"
-          :content="props.noticeItem.title"
-          placement="top-start"
-          :enterable="!isMobile"
-        >
-          <div
-            ref="titleRef"
-            class="notice-title-content"
-            @mouseover="hoverTitle"
-          >
-            {{ props.noticeItem.title }}
-          </div>
-        </el-tooltip>
+        <el-button
+          type="warning"
+          :icon="useRenderIcon(Copy)"
+          circle
+          size="small"
+          @click="copyLinks(props.noticeItem.message)"
+          style="margin-right: 10px"
+        />
+
         <el-tag
-          v-if="props.noticeItem?.extra"
           :type="props.noticeItem?.status"
           size="small"
           class="notice-title-extra"
+          style="margin-right: 10px"
         >
-          {{ props.noticeItem?.extra }}
+          {{ props.noticeItem.extra }}
         </el-tag>
+        <div class="notice-title-content">
+          {{ props.noticeItem.title }}
+        </div>
       </div>
-
+      <div class="notice-text-datetime text-[#00000073] dark:text-white">
+        {{
+          `${props.noticeItem.datetime}&emsp;&emsp;&emsp;&emsp;小墩插件(${props.noticeItem?.bot_id})`
+        }}
+      </div>
+      <div class="notice-title-content">
+        {{ props.noticeItem.title2 }}
+      </div>
       <el-tooltip
         popper-class="notice-title-popper"
         :effect="tooltipEffect"
-        :disabled="!descriptionTooltip"
-        :content="props.noticeItem.description"
+        :disabled="!messageTooltip"
+        :content="props.noticeItem.message"
         placement="top-start"
       >
         <div
-          ref="descriptionRef"
-          class="notice-text-description"
-          @mouseover="hoverDescription($event, props.noticeItem.description)"
+          ref="messageRef"
+          class="notice-text-message"
+          @mouseover="hoverDescription($event, props.noticeItem.message)"
         >
-          {{ props.noticeItem.description }}
+          {{ props.noticeItem.message }}
         </div>
       </el-tooltip>
-      <div class="notice-text-datetime text-[#00000073] dark:text-white">
-        {{ props.noticeItem.datetime }}
-      </div>
     </div>
   </div>
 </template>
@@ -134,11 +128,14 @@ function hoverDescription(event, description) {
 
     .notice-text-title {
       display: flex;
-      margin-bottom: 8px;
+      align-items: center;
+      margin-bottom: 4px;
       font-size: 14px;
       font-weight: 400;
       line-height: 1.5715;
       cursor: pointer;
+      flex-wrap: wrap;
+      justify-content: flex-start;
 
       .notice-title-content {
         flex: 1;
@@ -150,27 +147,28 @@ function hoverDescription(event, description) {
 
       .notice-title-extra {
         float: right;
-        margin-top: -1.5px;
         font-weight: 400;
       }
     }
 
-    .notice-text-description,
+    .notice-text-message,
     .notice-text-datetime {
       font-size: 12px;
+      margin-bottom: 20px;
       line-height: 1.5715;
     }
 
-    .notice-text-description {
+    .notice-text-message {
       display: -webkit-box;
       overflow: hidden;
       text-overflow: ellipsis;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 5;
       -webkit-box-orient: vertical;
     }
 
     .notice-text-datetime {
-      margin-top: 4px;
+      margin-top: 2px;
+      margin-bottom: 4px;
     }
   }
 }

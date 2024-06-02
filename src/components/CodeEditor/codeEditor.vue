@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: sakuya
  * @Date: 2022年5月20日21:46:29
- * @LastEditors: 
- * @LastEditTime: 
+ * @LastEditors: YourName
+ * @LastEditTime: 2024-06-01 22:11:14
 -->
 
 <template>
@@ -21,7 +21,6 @@ import CodeMirror from "codemirror";
 import "codemirror/lib/codemirror.css";
 
 //主题
-import "codemirror/theme/idea.css";
 import "codemirror/theme/darcula.css";
 import "codemirror/theme/ayu-mirage.css";
 
@@ -29,22 +28,17 @@ import "codemirror/theme/ayu-mirage.css";
 import "codemirror/addon/selection/active-line";
 
 //语言
-import "codemirror/mode/clike/clike"; // plaintext, java
 import "codemirror/mode/javascript/javascript"; // javascript
 import "codemirror/mode/python/python"; // python
-import "codemirror/mode/sql/sql"; // sql
 import "codemirror/mode/xml/xml"; // xml
 import "codemirror/mode/php/php"; // php
 import "codemirror/mode/go/go"; // go
 import "codemirror/mode/css/css"; // css
 import "codemirror/mode/htmlmixed/htmlmixed"; // html
-// import "codemirror/mode/kotlin/kotlin"; // kotlin
 import "codemirror/mode/yaml/yaml"; // yaml
 import "codemirror/mode/markdown/markdown"; // markdown
 import "codemirror/mode/lua/lua"; // lua
-// import "codemirror/mode/json/json"; // json
-// import "codemirror/mode/redis/redis"; // redis
-// import "codemirror/mode/shell/shell"; // shell
+import "codemirror/mode/shell/shell"; // shell
 
 export default {
   props: {
@@ -54,7 +48,7 @@ export default {
     },
     mode: {
       type: String,
-      default: "python"
+      default: "clike"
     },
     height: {
       type: [String, Number],
@@ -66,7 +60,7 @@ export default {
     },
     theme: {
       type: String,
-      default: "idea"
+      default: "darcula"
     },
     readOnly: {
       type: Boolean,

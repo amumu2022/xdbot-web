@@ -25,7 +25,6 @@ const newFormInline = ref(props.formInline);
 function getRef() {
   return ruleFormRef.value;
 }
-get_CodeType(newFormInline.value.extension);
 defineExpose({ getRef });
 </script>
 
@@ -66,6 +65,7 @@ defineExpose({ getRef });
           <sc-code-editor
             v-model="newFormInline.content"
             :mode="get_CodeType(newFormInline.extension)"
+            theme="darcula"
             height="550px"
           />
         </el-form-item>

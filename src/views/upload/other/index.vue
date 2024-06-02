@@ -16,7 +16,6 @@ const {
   dataList,
   pagination,
   selectedNum,
-  // buttonClass,
   exportExcel,
   onSearch,
   openDialog,
@@ -95,13 +94,11 @@ const {
               <template #reference>
                 <el-button
                   class="reset-margin"
-                  link
+                  circle
                   type="danger"
                   :size="size"
                   :icon="useRenderIcon(Delete)"
-                >
-                  删除
-                </el-button>
+                />
               </template>
             </el-popconfirm>
           </template>

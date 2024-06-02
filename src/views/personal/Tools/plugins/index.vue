@@ -5,7 +5,10 @@ import { useBasicLayout } from "@/hooks/useBasicLayout";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import Search from "@iconify-icons/ep/search";
 import Refresh from "@iconify-icons/ep/refresh";
+import AddFill from "@iconify-icons/ri/add-circle-line";
+import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
+import { ElMessageBox } from "element-plus";
 import { downloadByUrl } from "@pureadmin/utils";
 
 import {
@@ -19,7 +22,7 @@ import {
 const { isMobile } = useBasicLayout();
 const loading = ref(true);
 const formRef = ref();
-
+const router = useRouter();
 const form = reactive({
   name: "",
   installed: "1",
@@ -96,7 +99,7 @@ const onCurrentChange = (current: number) => {
 };
 
 const handleClickDetial = product => {
-  message(`还在开发进程中`, { type: "error" });
+  message(`${product.name} 还在开发进程中`, { type: "error" });
 };
 const handleClickUpdate = product => {
   UpdatePluginsApi(product).then(async res => {
@@ -139,16 +142,7 @@ const handleClickDelete = product => {
 };
 
 const handleClickDownloads = product => {
-  const link = document.createElement("a");
-  link.href = product.url;
-  link.target = "_blank";
-  link.download = "";
-
-  document.body.appendChild(link);
-  link.click();
-
-  document.body.removeChild(link);
-  // downloadByUrl(product.url, "x.py");
+  downloadByUrl(product.url, `${product.name}.py`);
 };
 
 const handleClickInstall = product => {
@@ -163,6 +157,22 @@ const handleClickInstall = product => {
 
   onSearch();
 };
+
+function turnToFileSet() {
+  ElMessageBox.confirm(
+    `确定跳转到<strong>文件管理页面</strong>吗?<br>请进入<strong>plugins</strong>文件夹开始编写插件`,
+    "系统提示",
+    {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+      dangerouslyUseHTMLString: true,
+      draggable: true
+    }
+  ).then(() => {
+    router.push({ name: "WebFile" });
+  });
+}
 
 const resetForm = formEl => {
   if (!formEl) return;
@@ -207,6 +217,16 @@ const svg = `
           margin-bottom: 20px;
         "
       >
+        <el-form-item>
+          <el-button
+            :icon="useRenderIcon(AddFill)"
+            type="success"
+            @click="turnToFileSet"
+          >
+            新建插件
+          </el-button>
+        </el-form-item>
+
         <el-form-item label="插件名称：" prop="name">
           <el-input
             v-model="form.name"

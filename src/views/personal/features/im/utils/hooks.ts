@@ -8,19 +8,13 @@ import { getWsLogList } from "@/api/system/monitor";
 
 const message_dict = ref({});
 
-export const logs = ref<any>([
-  // {
-  //   level: "INFO",
-  //   time: dayjs().format("MM-DD HH:mm:ss"),
-  //   bot: "10001",
-  //   type: "日志输出",
-  //   message: "websocket 连接成功",
-  //   data: null
-  // }
-]);
+export const logs = ref<any>([]);
 
 export const inputText = ref("");
 export const ws_status = ref(socket.socket_open);
+export const SendData = ref([]);
+export const NoticeData = ref([]);
+export const RecvData = ref([]);
 
 export const recordContent = ref<any>([
   {
@@ -78,9 +72,63 @@ export function CloseWs() {
   message("连接已断开", { type: "warning" });
 }
 
+// 生成日志
+function noticeItem(logData) {
+  const type = logData.type;
+  const group_id = logData.data?.group_id;
+  const user_id = logData.data?.user_id;
+  let data = {};
+  if (logData.name == "send_msg") {
+    data = {
+      title: `${type === "group" ? group_id : user_id}`,
+      title2: "",
+      bot_id: logData.bot,
+      message: logData.message,
+      datetime: logData.time,
+      extra: type === "group" ? "群聊" : "私聊",
+      status: type === "group" ? "success" : ""
+    };
+    SendData.value.push(data);
+  } else if (logData.name == "message") {
+    data = {
+      title: `${type === "group" ? group_id : user_id}`,
+      bot_id: logData.bot,
+      title2: `${logData.data?.sender.nickname} (${logData.data?.sender.user_id}) `,
+      message: logData.message,
+      datetime: logData.time,
+      extra: type === "group" ? "群聊" : "私聊",
+      status: type === "group" ? "success" : ""
+    };
+    RecvData.value.push(data);
+  } else if (logData.name == "notice") {
+    data = {
+      title: `${type === "group" ? group_id : user_id}`,
+      title2: "",
+      bot_id: logData.bot,
+      message: makeNotice(type, user_id, group_id, logData.data),
+      datetime: logData.time,
+      extra: "事件消息",
+      status: "warning"
+    };
+    NoticeData.value.push(data);
+  } else if (logData.name == "request") {
+    data = {
+      title: `${type === "group" ? group_id : user_id}`,
+      title2: "",
+      bot_id: logData.bot,
+      message: makeRequest(type, user_id, group_id, logData.data),
+      datetime: logData.time,
+      extra: "请求消息",
+      status: "danger"
+    };
+    NoticeData.value.push(data);
+  }
+}
+
 function pushLog(params) {
   const event_name = params.event_name;
   const bot_id = params.bot_id;
+  const time = dayjs(params.time * 1000).format("MM-DD HH:mm:ss");
   let event_type = "";
   let level = "";
   let message = "";
@@ -113,19 +161,28 @@ function pushLog(params) {
   const log = {
     level: level,
     bot: bot_id,
-    time: dayjs(params.time).format("MM-DD HH:mm:ss"),
+    time: time,
     name: event_name,
     type: event_type,
     data: params.message,
     message: message.length > 50 ? `${message.slice(0, 47)}...` : message
   };
+  const log2 = {
+    level: level,
+    bot: bot_id,
+    time: time,
+    name: event_name,
+    type: event_type,
+    data: params.message,
+    message: message
+  };
   logs.value.push(log);
+  noticeItem(log2);
 }
 
 const onMessage = (msg_event: { data: string }) => {
   const json_data = JSON.parse(msg_event.data);
   const action = json_data.action;
-  console.log(json_data);
   if (action == "send_msg") {
     const content = json_data.params.message;
 
@@ -302,13 +359,84 @@ function makePrivateMessage(content) {
   return message;
 }
 
-export function getSrc(content) {
-  if (content.startsWith("base64://")) {
-    return `data:image/png;base64,${content.slice(9)}`;
+// 处理notice消息
+export function makeNotice(type, user_id, group_id, data) {
+  let text = "";
+  if (type == "group_increase") {
+    // 群员增加
+    text = `新成员 (${user_id}) 进入了群 (${group_id})`;
+  } else if (type == "group_decrease") {
+    // 群员减少
+    text = `成员 (${user_id}) 退出了群 (${group_id})， 操作者为${data?.operator_id}`;
+  } else if (type == "offline_file") {
+    // 文件上传
+    text = `成员 (${user_id}) 在群 (${group_id}) 上传了文件${data?.file.name}，大小为${data?.file.size}`;
+  } else if (type == "group_recall") {
+    // 群消息撤回
+    text = `成员 (${user_id}) 在群 (${group_id}) 撤回了一条消息${data?.message_id}， 操作者为${data?.operator_id}`;
+  } else if (type == "friend_recall") {
+    // 好友消息撤回
+    text = `好友 (${user_id}) 撤回了一条消息${data?.message_id}`;
+  } else if (type == "notify") {
+    const sub_type = data?.sub_type;
+
+    if (sub_type == "poke") {
+      if (!group_id) {
+        // 好友戳一戳
+        text = `好友 (${user_id}) 戳了一下你`;
+      } else {
+        // 群内戳一戳
+        text = `成员 (${user_id}) 在群 (${group_id}) 戳了一下你`;
+      }
+    } else if (sub_type == "lucky_king") {
+      // 群红包运气王提示
+      text = `成员 (${user_id}) 在群 (${group_id}) 取得了群红包运气王`;
+    } else if (sub_type == "honor") {
+      // 群成员荣誉变更提示
+      text = `成员 (${user_id}) 在群 (${group_id}) 的成员荣誉发生变更`;
+    }
+  } else if (type == "group_card") {
+    // 群成员名片更新
+    text = `成员 (${user_id}) 在群 (${group_id}) 修改了群名片 (${data?.card_old}-->${data?.card_new})`;
+  } else if (type == "lucky_king") {
+    // 群成员头衔更新事件
+    text = `成员 (${user_id}) 在群 (${group_id}) 的成员头衔发生变更 (${data?.title})`;
+  } else if (type == "friend_add") {
+    // 好友添加事件
+    text = `用户 (${user_id}) 已添加您为好友`;
+  } else if (type == "group_ban") {
+    // 群禁言事件
+    if (data?.sub_type == "ban") {
+      // 禁言
+      text = `成员 (${user_id}) 在群 (${group_id}) 被禁言${data?.duration}秒， 操作者为${data?.operator_id}`;
+    } else {
+      // 解除禁言
+      text = `成员 (${user_id}) 在群 (${group_id}) 被接触禁言， 操作者为${data?.operator_id}`;
+    }
+  } else if (type == "group_admin") {
+    // 群管理员变动事件
+    if (data?.sub_type == "set") {
+      // 设置管理员
+      text = `成员 (${user_id}) 在群 (${group_id}) 被设置为管理员身份`;
+    } else {
+      // 取消管理员
+      text = `管理员 (${user_id}) 在群 (${group_id}) 被取消管理员身份`;
+    }
   }
-  return content;
+
+  return text;
 }
 
-export function srcList(content) {
-  return [getSrc(content)];
+// 处理request消息
+export function makeRequest(type, user_id, group_id, data) {
+  let text = "";
+
+  if (type == "friend") {
+    // 加好友请求事件
+    text = `用户 (${user_id}) 申请添加您为好友，理由为：${data?.comment}`;
+  } else if (type == "group") {
+    // 加群请求／邀请事件
+    text = `用户 (${user_id}) 申请加入群聊，理由为： (${group_id})， 操作者为${data?.operator_id}`;
+  }
+  return text;
 }

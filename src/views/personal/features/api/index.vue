@@ -9,7 +9,7 @@ import EditPen from "@iconify-icons/ep/edit-pen";
 import Search from "@iconify-icons/ep/search";
 import Refresh from "@iconify-icons/ep/refresh";
 import AddFill from "@iconify-icons/ri/add-circle-line";
-import Output from "@iconify-icons/ep/star";
+import Share from "@iconify-icons/ep/share";
 
 import fold_down from "@iconify-icons/ep/caret-bottom";
 import fold_up from "@iconify-icons/ep/caret-top";
@@ -212,7 +212,7 @@ const {
               circle
               type="primary"
               :size="size"
-              :icon="useRenderIcon(Output)"
+              :icon="useRenderIcon(Share)"
               @click="OutputFuc(row)"
             />
           </template>

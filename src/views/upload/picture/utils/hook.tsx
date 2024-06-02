@@ -12,6 +12,8 @@ import { type PaginationProps } from "@pureadmin/table";
 import { type Ref, h, ref, toRaw, reactive, onMounted } from "vue";
 import { getKeyList } from "@pureadmin/utils";
 import { useBasicLayout } from "@/hooks/useBasicLayout";
+import { useCopyToClipboard } from "@pureadmin/utils";
+const { clipboardValue, copied } = useCopyToClipboard();
 const { isMobile } = useBasicLayout();
 export function useRole(tableRef: Ref) {
   const form = reactive({
@@ -34,6 +36,16 @@ export function useRole(tableRef: Ref) {
   };
   const exportExcel = () => {
     ExportExcel(dataList, columns);
+  };
+
+  // 复制链接
+  const copyLinks = url => {
+    clipboardValue.value = url;
+    if (copied.value) {
+      message(`链接已复制`, { type: "success" });
+    } else {
+      message(`复制失败`, { type: "error" });
+    }
   };
 
   const columns: TableColumnList = [
@@ -96,7 +108,7 @@ export function useRole(tableRef: Ref) {
     {
       label: "操作",
       fixed: "right",
-      width: 80,
+      width: 110,
       slot: "operation"
     }
   ];
@@ -206,6 +218,7 @@ export function useRole(tableRef: Ref) {
     selectedNum,
     pagination,
     onbatchDel,
+    copyLinks,
     exportExcel,
     onSearch,
     resetForm,

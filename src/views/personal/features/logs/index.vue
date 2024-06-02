@@ -1,10 +1,10 @@
 <!--
  * @Author: xdteam
  * @Date: 2024-05-05 23:07:11
- * @LastEditTime: 2024-05-09 20:14:21
+ * @LastEditTime: 2024-06-02 20:54:47
  * @LastEditors: YourName
  * @Description: 
- * @FilePath: \vue-pure-admin\src\views\personal\features\ai\index.vue
+ * @FilePath: \vue-pure-admin\src\views\personal\features\logs\index.vue
  * 版权声明
 -->
 <template>
@@ -41,7 +41,13 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
-import { logs, connectWs, ws_status } from "../im/utils/hooks";
+import {
+  logs,
+  connectWs,
+  ws_status,
+  makeNotice,
+  makeRequest
+} from "../im/utils/hooks";
 import { useRouter } from "vue-router";
 import { storageLocal } from "@pureadmin/utils";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -95,7 +101,6 @@ function logger(logData) {
   const type = logData.type;
   const group_id = logData.data?.group_id;
   const user_id = logData.data?.user_id;
-
   if (logData.name == "send_msg") {
     text += `发送${type === "group" ? "群聊" : "私聊"} `;
     text += `(${type === "group" ? group_id : user_id}) `;
@@ -110,88 +115,6 @@ function logger(logData) {
     text += makeRequest(type, user_id, group_id, logData.data);
   }
 
-  return text;
-}
-
-// 处理notice消息
-function makeNotice(type, user_id, group_id, data) {
-  let text = "";
-  if (type == "group_increase") {
-    // 群员增加
-    text = `新成员 (${user_id}) 进入了群 (${group_id})`;
-  } else if (type == "group_decrease") {
-    // 群员减少
-    text = `成员 (${user_id}) 退出了群 (${group_id})， 操作者为${data?.operator_id}`;
-  } else if (type == "offline_file") {
-    // 文件上传
-    text = `成员 (${user_id}) 在群 (${group_id}) 上传了文件${data?.file.name}，大小为${data?.file.size}`;
-  } else if (type == "group_recall") {
-    // 群消息撤回
-    text = `成员 (${user_id}) 在群 (${group_id}) 撤回了一条消息${data?.message_id}， 操作者为${data?.operator_id}`;
-  } else if (type == "friend_recall") {
-    // 好友消息撤回
-    text = `好友 (${user_id}) 撤回了一条消息${data?.message_id}`;
-  } else if (type == "notify") {
-    const sub_type = data?.sub_type;
-
-    if (sub_type == "poke") {
-      if (!group_id) {
-        // 好友戳一戳
-        text = `好友 (${user_id}) 戳了一下你`;
-      } else {
-        // 群内戳一戳
-        text = `成员 (${user_id}) 在群 (${group_id}) 戳了一下你`;
-      }
-    } else if (sub_type == "lucky_king") {
-      // 群红包运气王提示
-      text = `成员 (${user_id}) 在群 (${group_id}) 取得了群红包运气王`;
-    } else if (sub_type == "honor") {
-      // 群成员荣誉变更提示
-      text = `成员 (${user_id}) 在群 (${group_id}) 的成员荣誉发生变更`;
-    }
-  } else if (type == "group_card") {
-    // 群成员名片更新
-    text = `成员 (${user_id}) 在群 (${group_id}) 修改了群名片 (${data?.card_old}-->${data?.card_new})`;
-  } else if (type == "lucky_king") {
-    // 群成员头衔更新事件
-    text = `成员 (${user_id}) 在群 (${group_id}) 的成员头衔发生变更 (${data?.title})`;
-  } else if (type == "friend_add") {
-    // 好友添加事件
-    text = `用户 (${user_id}) 已添加您为好友`;
-  } else if (type == "group_ban") {
-    // 群禁言事件
-    if (data?.sub_type == "ban") {
-      // 禁言
-      text = `成员 (${user_id}) 在群 (${group_id}) 被禁言${data?.duration}秒， 操作者为${data?.operator_id}`;
-    } else {
-      // 解除禁言
-      text = `成员 (${user_id}) 在群 (${group_id}) 被接触禁言， 操作者为${data?.operator_id}`;
-    }
-  } else if (type == "group_admin") {
-    // 群管理员变动事件
-    if (data?.sub_type == "set") {
-      // 设置管理员
-      text = `成员 (${user_id}) 在群 (${group_id}) 被设置为管理员身份`;
-    } else {
-      // 取消管理员
-      text = `管理员 (${user_id}) 在群 (${group_id}) 被取消管理员身份`;
-    }
-  }
-
-  return text;
-}
-
-// 处理request消息
-function makeRequest(type, user_id, group_id, data) {
-  let text = "";
-
-  if (type == "friend") {
-    // 加好友请求事件
-    text = `用户 (${user_id}) 申请添加您为好友，理由为：${data?.comment}`;
-  } else if (type == "group") {
-    // 加群请求／邀请事件
-    text = `用户 (${user_id}) 申请加入群聊，理由为： (${group_id})， 操作者为${data?.operator_id}`;
-  }
   return text;
 }
 

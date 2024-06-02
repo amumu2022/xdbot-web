@@ -5,6 +5,7 @@ import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { ref } from "vue";
 import Delete from "@iconify-icons/ep/delete";
 import AddFill from "@iconify-icons/ri/add-circle-line";
+import Share from "@iconify-icons/ep/share";
 
 defineOptions({
   name: "UploadPic"
@@ -15,6 +16,7 @@ const {
   columns,
   dataList,
   pagination,
+  copyLinks,
   selectedNum,
   onSearch,
   openDialog,
@@ -87,6 +89,14 @@ const {
           @page-current-change="handleCurrentChange"
         >
           <template #operation="{ row }">
+            <el-button
+              class="reset-margin"
+              circle
+              type="primary"
+              :size="size"
+              :icon="useRenderIcon(Share)"
+              @click="copyLinks(row.href)"
+            />
             <el-popconfirm
               :title="`是否确认删除图片名称为${row.name}的这条数据`"
               @confirm="handleDelete(row)"
@@ -94,13 +104,11 @@ const {
               <template #reference>
                 <el-button
                   class="reset-margin"
-                  link
+                  circle
                   type="danger"
                   :size="size"
                   :icon="useRenderIcon(Delete)"
-                >
-                  删除
-                </el-button>
+                />
               </template>
             </el-popconfirm>
           </template>

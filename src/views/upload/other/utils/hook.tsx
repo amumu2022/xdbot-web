@@ -90,7 +90,7 @@ export function useRole(tableRef: Ref) {
     {
       label: "操作",
       fixed: "right",
-      width: 80,
+      width: 60,
       slot: "operation"
     }
   ];
