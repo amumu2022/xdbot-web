@@ -88,7 +88,7 @@ function noticeItem(logData) {
       extra: type === "group" ? "群聊" : "私聊",
       status: type === "group" ? "success" : ""
     };
-    SendData.value.push(data);
+    SendData.value.unshift(data);
   } else if (logData.name == "message") {
     data = {
       title: `${type === "group" ? group_id : user_id}`,
@@ -99,7 +99,7 @@ function noticeItem(logData) {
       extra: type === "group" ? "群聊" : "私聊",
       status: type === "group" ? "success" : ""
     };
-    RecvData.value.push(data);
+    RecvData.value.unshift(data);
   } else if (logData.name == "notice") {
     data = {
       title: `${type === "group" ? group_id : user_id}`,
@@ -110,7 +110,7 @@ function noticeItem(logData) {
       extra: "事件消息",
       status: "warning"
     };
-    NoticeData.value.push(data);
+    NoticeData.value.unshift(data);
   } else if (logData.name == "request") {
     data = {
       title: `${type === "group" ? group_id : user_id}`,
@@ -121,7 +121,7 @@ function noticeItem(logData) {
       extra: "请求消息",
       status: "danger"
     };
-    NoticeData.value.push(data);
+    NoticeData.value.unshift(data);
   }
 }
 
@@ -176,7 +176,7 @@ function pushLog(params) {
     data: params.message,
     message: message
   };
-  logs.value.push(log);
+  logs.value.unshift(log);
   noticeItem(log2);
 }
 
@@ -439,4 +439,15 @@ export function makeRequest(type, user_id, group_id, data) {
     text = `用户 (${user_id}) 申请加入群聊，理由为： (${group_id})， 操作者为${data?.operator_id}`;
   }
   return text;
+}
+
+export function getSrc(content) {
+  if (content.startsWith("base64://")) {
+    return `data:image/png;base64,${content.slice(9)}`;
+  }
+  return content;
+}
+
+export function srcList(content) {
+  return [getSrc(content)];
 }
