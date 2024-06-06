@@ -162,8 +162,10 @@ function hoverDescription(event, message) {
       display: -webkit-box;
       overflow: hidden;
       text-overflow: ellipsis;
-      -webkit-line-clamp: 5;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
+      word-break: break-all;
+      max-width: 100%;
     }
 
     .notice-text-datetime {

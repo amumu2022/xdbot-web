@@ -1,11 +1,51 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { noticesData } from "./data";
 import NoticeList from "./noticeList.vue";
 import Bell from "@iconify-icons/ep/bell";
-
+import { connectWs, ws_status } from "@/views/personal/features/im/utils/hooks";
 const notices = ref(noticesData);
 const activeKey = ref(noticesData[0].key);
+import { useRouter } from "vue-router";
+import { storageLocal } from "@pureadmin/utils";
+import { ElMessage, ElMessageBox } from "element-plus";
+const router = useRouter();
+
+interface StorageConfigs {
+  ws_url: string;
+}
+
+//初始化ws连接
+function get() {
+  const ws_url = storageLocal().getItem<StorageConfigs>("SimulateSet")?.ws_url;
+  if (ws_url) {
+    if (!ws_status.value) {
+      connectWs(ws_url);
+    }
+  } else
+    ElMessageBox.confirm("ws地址尚未配置，是否跳转配置", "Warning", {
+      confirmButtonText: "前往",
+      cancelButtonText: "取消",
+      type: "warning"
+    })
+      .then(() => {
+        router.push({ name: "FeaturesIM" });
+        ElMessage({
+          type: "info",
+          message: "请点击设置按钮进行设置"
+        });
+      })
+      .catch(() => {
+        ElMessage({
+          type: "warning",
+          message: "配置ws后才能输出日志哦~"
+        });
+      });
+}
+
+onMounted(() => {
+  get();
+});
 </script>
 
 <template>
