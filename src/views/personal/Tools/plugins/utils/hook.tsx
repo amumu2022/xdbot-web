@@ -46,7 +46,6 @@ export function useRole(tableRef: Ref) {
   const { switchStyle } = usePublicHooks();
   const exportExcel = () => {
     ExportExcel(dataList, columns);
-
   };
 
   const columns: TableColumnList = [
@@ -222,7 +221,6 @@ export function useRole(tableRef: Ref) {
   async function onSearch() {
     loading.value = true;
     const postData = toRaw(form);
-    console.log(postData.keyword);
     postData.keyword = postData.keyword || [];
 
     if (!Array.isArray(postData.keyword)) {
@@ -270,9 +268,7 @@ export function useRole(tableRef: Ref) {
         }
         FormRef.validate(valid => {
           if (valid) {
-            
             if (title === "新增") {
-     
               createctmApi(curData).then(async res => {
                 if (res.code === 200) {
                   await chores();
@@ -281,7 +277,6 @@ export function useRole(tableRef: Ref) {
                 }
               });
             } else if (title === "编辑") {
-              
               Updatectm(row?.id, curData).then(async res => {
                 if (res.code === 200) {
                   await chores();

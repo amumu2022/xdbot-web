@@ -189,59 +189,35 @@ export function useRole(tableRef: Ref) {
   }
 
   function OutputFuc(row) {
-    if (row.headers) {
-      row.headers = btoa(encodeURIComponent(row.headers));
-    } else {
-      row.headers = "";
-    }
-    if (row.cookie) {
-      row.cookie = btoa(encodeURIComponent(row.cookie));
-    } else {
-      row.cookie = "";
-    }
-    if (row.body) {
-      row.body = btoa(encodeURIComponent(row.body));
-    } else {
-      row.body = "";
-    }
-    if (row.rule) {
-      row.rule = btoa(encodeURIComponent(row.rule));
-    } else {
-      row.rule = "";
-    }
-    if (row.back_set) {
-      row.back_set = btoa(encodeURIComponent(row.back_set));
-    } else {
-      row.back_set = "";
-    }
+    const encodeIfPresent = value =>
+      value ? btoa(encodeURIComponent(value)) : "";
+    row.headers = encodeIfPresent(row.headers);
+    row.cookie = encodeIfPresent(row.cookie);
+    row.body = encodeIfPresent(row.body);
+    row.rule = encodeIfPresent(row.rule);
+    row.back_set = encodeIfPresent(row.back_set);
+    console.log(row);
     clipboardValue.value = JSON.stringify(row);
     if (copied.value) {
       message(`导出成功`, { type: "success" });
-      onSearch();
     } else {
       message(`导出失败`, { type: "warning" });
     }
   }
 
-  /** 当CheckBox选择项发生变化时会触发该事件 */
   function handleSelectionChange(val) {
     selectedNum.value = val.length;
-    // 重置表格高度
     tableRef.value.setAdaptive();
   }
 
-  /** 取消选择 */
   function onSelectionCancel() {
     selectedNum.value = 0;
-    // 用于多选表格，清空接口的选择
     tableRef.value.getTableRef().clearSelection();
   }
 
   /** 批量删除 */
   function onbatchDel() {
-    // 返回当前选中的行
     const curSelected = tableRef.value.getTableRef().getSelectionRows();
-    // 接下来根据实际业务，通过选中行的某项数据，比如下面的id，调用接口进行批量删除
     manyDeleteAPI(getKeyList(curSelected, "id")).then(async res => {
       if (res.code === 200) {
         message(`已删除接口编号为 ${getKeyList(curSelected, "id")} 的数据`, {
@@ -297,7 +273,12 @@ export function useRole(tableRef: Ref) {
           encode: row?.encode ?? "utf-8",
           headers: row?.headers ?? null,
           body: row?.body ?? null,
-          cookie: row?.cookie ?? null
+          cookie: row?.cookie ?? null,
+
+          judge: row?.judge ?? "no_judge", // 请求失败判断类型
+          judgeValue: row?.judgeValue ?? "200", // 请求失败判断值
+          judgeKey: row?.judgeKey ?? "", // 请求判断键值
+          time: row?.time ?? 10 // 请求超时时间
         }
       },
       width: "46%",

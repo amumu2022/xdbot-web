@@ -1,9 +1,18 @@
+/*
+ * @Author: xdteam
+ * @Date: 2024-05-28 21:34:05
+ * @LastEditTime: 2024-07-01 20:43:10
+ * @LastEditors: YourName
+ * @Description:
+ * @FilePath: \vue-pure-admin\src\api\Tools\plugins.ts
+ * 版权声明
+ */
 import { http } from "@/utils/http";
 import { ResultDetail, MockDetail } from "@/api/types";
 
 /** 获取插件总列表 */
-export const getPluginsAllList = (data?: object) => {
-  return http.request<MockDetail>("get", "/getPluginsList", { data });
+export const getPluginsAllList = () => {
+  return http.request<MockDetail>("get", "/api/v1/plugins/online/list");
 };
 
 /** 获取插件列表 */

@@ -24,7 +24,11 @@ const props = withDefaults(defineProps<FormProps>(), {
     headers: "",
     body: "",
     cookie: "",
-    enable: ""
+    enable: "",
+    judge: "", // 请求失败判断类型
+    judgeValue: "", // 请求失败判断值
+    judgeKey: "", // 请求判断键值
+    time: 5 // 请求超时时间
   })
 });
 const methodOptions = [
@@ -38,6 +42,13 @@ const encodeOptions = [
   { value: "utf-8", label: "utf-8" },
   { value: "gbk", label: "gbk" }
 ];
+
+const judgeOptions = [
+  { value: "no_judge", label: "不进行判断" },
+  { value: "status_code", label: "状态码" },
+  { value: "keyword", label: "属性值" }
+];
+
 const newFormInline = ref(props.formInline);
 const back_msg = ref("");
 
@@ -107,6 +118,11 @@ function InputData() {
       newFormInline.value.headers = decodeURIComponent(atob(data.headers));
       newFormInline.value.body = decodeURIComponent(atob(data.body));
       newFormInline.value.cookie = decodeURIComponent(atob(data.cookie));
+      newFormInline.value.judgeKey = data.judgeKey;
+      newFormInline.value.judge = data.judge;
+      newFormInline.value.judgeValue = data.judgeValue;
+      newFormInline.value.time = data.time;
+
       // 重置表单数据
       formPrimitiveParam.value = resetFormPrimitiveParam.value;
     }
@@ -121,7 +137,6 @@ defineExpose({ getRef });
     ref="ruleFormRef"
     :model="newFormInline"
     :rules="formRules"
-    label-position="top"
     label-width="82px"
   >
     <el-row :gutter="40">
@@ -212,7 +227,7 @@ defineExpose({ getRef });
       </re-col>
 
       <re-col :value="12" :xs="24" :sm="24">
-        <el-form-item label="传递参数" prop="body">
+        <el-form-item label="post参数" prop="body">
           <el-input
             rows="2"
             type="textarea"
@@ -235,13 +250,79 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
 
-      <re-col :value="24" :xs="24" :sm="24">
-        <template #label>
-          <from-question
-            label="返回内容"
-            description="在这里设置返回的内容模板"
+      <re-col :value="12" :xs="24" :sm="24">
+        <el-form-item label="超时时间" prop="time">
+          <template #label>
+            <from-question
+              label="超时时间"
+              description="请求超时时间，超出该时间返回请求超时并返回给用户"
+            />
+          </template>
+          <el-input
+            v-model="newFormInline.time"
+            clearable
+            placeholder="请输入请求超时时间"
           />
+        </el-form-item>
+      </re-col>
+
+      <re-col :value="12" :xs="24" :sm="24">
+        <el-form-item label="请求判断" prop="judge">
+          <template #label>
+            <from-question
+              label="请求判断"
+              description="作为判断请求是否成功的依据"
+            />
+          </template>
+          <el-select
+            v-model="newFormInline.judge"
+            placeholder="请选择判断类型"
+            class="w-full"
+          >
+            <el-option
+              v-for="(item, index) in judgeOptions"
+              :key="index"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </re-col>
+
+      <re-col :value="12" :xs="24" :sm="24">
+        <template v-if="newFormInline.judge == 'keyword'">
+          <el-form-item label="判断属性" prop="judgeKey">
+            <template #label>
+              <from-question label="判断属性" description="请求判断的键值" />
+            </template>
+            <el-input
+              v-model="newFormInline.judgeKey"
+              clearable
+              placeholder="请输入属性键值"
+            />
+          </el-form-item>
         </template>
+      </re-col>
+
+      <re-col :value="12" :xs="24" :sm="24">
+        <template v-if="newFormInline.judge != 'no_judge'">
+          <el-form-item label="判断值" prop="judgeValue">
+            <template #label>
+              <from-question
+                label="判断值"
+                description="仅支持判断请求状态码及json返回内容"
+              />
+            </template>
+            <el-input
+              v-model="newFormInline.judgeValue"
+              clearable
+              placeholder="请输入判断值"
+            />
+          </el-form-item>
+        </template>
+      </re-col>
+
+      <re-col :value="24" :xs="24" :sm="24">
         <el-form-item label="返回内容" prop="back_set">
           <el-input
             rows="4"

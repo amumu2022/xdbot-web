@@ -66,7 +66,7 @@ async function onSearch() {
     const installed = post_data.installed;
     const { data } = await getPluginsAllList();
 
-    productList.value = data.list.filter(product =>
+    productList.value = data.results.filter(product =>
       product.name.includes(name)
     );
 

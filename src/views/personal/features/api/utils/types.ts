@@ -15,6 +15,10 @@ interface FormItemProps {
   body?: string;
   cookie?: string;
   enable: string;
+  judge?: string;
+  judgeValue?: string;
+  judgeKey?: string;
+  time: number;
 }
 interface FormProps {
   formInline: FormItemProps;
