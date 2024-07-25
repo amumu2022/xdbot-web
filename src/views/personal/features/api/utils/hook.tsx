@@ -8,7 +8,7 @@ import {
   createAPI,
   deleteAPI,
   manyDeleteAPI
-} from "@/api/bot/features/main";
+} from "@/api/bot/features/customApi";
 import { ElMessageBox } from "element-plus";
 import { usePublicHooks } from "../../../hooks";
 import { addDialog } from "@/components/ReDialog";
@@ -196,7 +196,6 @@ export function useRole(tableRef: Ref) {
     row.body = encodeIfPresent(row.body);
     row.rule = encodeIfPresent(row.rule);
     row.back_set = encodeIfPresent(row.back_set);
-    console.log(row);
     clipboardValue.value = JSON.stringify(row);
     if (copied.value) {
       message(`导出成功`, { type: "success" });

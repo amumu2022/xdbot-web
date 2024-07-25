@@ -1,4 +1,4 @@
-import { getMusicData } from "@/api/bot/features/main";
+import { getMusicData } from "@/api/bot/features/customApi";
 import { ref, toRaw, reactive, onMounted } from "vue";
 import { ExportExcel } from "@/utils/xdteam";
 

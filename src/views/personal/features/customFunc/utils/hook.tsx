@@ -1,29 +1,34 @@
+/*
+ * @Author: xdteam
+ * @Date: 2024-07-25 23:39:32
+ * @LastEditTime: 2024-07-26 00:03:42
+ * @LastEditors: YourName
+ * @Description:
+ * @FilePath: \vue-pure-admin\src\views\personal\features\customFunc\utils\hook.tsx
+ * 版权声明
+ */
 import dayjs from "dayjs";
 import editForm from "../form.vue";
 import { message } from "@/utils/message";
 import {
-  getctmData,
-  Updatectm,
-  Updatectm_status,
-  createctmApi,
-  deletectmApi,
-  manyDeletectmApi
-} from "@/api/bot/keyword/keyword";
+  getFuncData,
+  UpdateFunc,
+  createFuncApi,
+  deleteFuncApi,
+  manyDeleteFuncApi
+} from "@/api/bot/features/customFunc";
 import { addDialog } from "@/components/ReDialog";
-import { type FormItemProps } from "../utils/types";
+import { type FormItemProps } from "./types";
 import { type PaginationProps } from "@pureadmin/table";
 import { getKeyList } from "@pureadmin/utils";
 import { useBasicLayout } from "@/hooks/useBasicLayout";
 const { isMobile } = useBasicLayout();
 import { ExportExcel } from "@/utils/xdteam";
 import { type Ref, h, ref, toRaw, reactive, onMounted } from "vue";
-import { usePublicHooks } from "../../../hooks";
-import { ElMessageBox } from "element-plus";
 
 export function useRole(tableRef: Ref) {
   const form = reactive({
-    keyword: undefined,
-    enable: "",
+    name: "",
     currentPage: 1,
     pageSize: 10
   });
@@ -42,8 +47,7 @@ export function useRole(tableRef: Ref) {
   const indexMethod = (index: number) => {
     return (form.currentPage - 1) * form.pageSize + index + 1;
   };
-  const switchLoadMap = ref({});
-  const { switchStyle } = usePublicHooks();
+
   const exportExcel = () => {
     ExportExcel(dataList, columns);
   };
@@ -66,39 +70,37 @@ export function useRole(tableRef: Ref) {
       prop: "id"
     },
     {
-      label: "函数关键词",
-      prop: "keyword",
+      label: "函数名称",
+      prop: "name",
+      minWidth: 120,
+      cellRenderer: ({ row, props }) => (
+        <div
+          class="tag-container"
+          style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;"
+        >
+          {
+            <el-tag size={props.size} type="" effect="dark">
+              {row.name}
+            </el-tag>
+          }
+        </div>
+      )
+    },
+    {
+      label: "函数内容",
+      prop: "code",
       minWidth: 380,
       cellRenderer: ({ row, props }) => (
         <div
           class="tag-container"
           style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;"
         >
-          {row.keyword.map(userId => (
+          {
             <el-tag size={props.size} type="" effect="dark">
-              {userId}
+              {row.code}
             </el-tag>
-          ))}
+          }
         </div>
-      )
-    },
-    {
-      label: "状态",
-      prop: "enable",
-      minWidth: 80,
-      cellRenderer: scope => (
-        <el-switch
-          size={scope.props.size === "small" ? "small" : "default"}
-          loading={switchLoadMap.value[scope.index]?.loading}
-          v-model={scope.row.enable}
-          active-value={true}
-          inactive-value={false}
-          active-text="已激活"
-          inactive-text="已停用"
-          inline-prompt
-          style={switchStyle.value}
-          onChange={() => onChange(scope as any)}
-        />
       )
     },
     {
@@ -116,56 +118,8 @@ export function useRole(tableRef: Ref) {
     }
   ];
 
-  function onChange({ row, index }) {
-    ElMessageBox.confirm(
-      `确认要<strong>${
-        row.enable === false ? "停用" : "启用"
-      }</strong><strong style='color:var(--el-color-primary)'>${
-        row.keyword
-      }</strong>关键词吗?`,
-      "系统提示",
-      {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-        dangerouslyUseHTMLString: true,
-        draggable: true
-      }
-    )
-      .then(() => {
-        switchLoadMap.value[index] = Object.assign(
-          {},
-          switchLoadMap.value[index],
-          {
-            loading: true
-          }
-        );
-        Updatectm_status(row.id).then(res => {
-          if (res.code === 200) {
-            setTimeout(() => {
-              switchLoadMap.value[index] = Object.assign(
-                {},
-                switchLoadMap.value[index],
-                {
-                  loading: false
-                }
-              );
-              message("已成功修改关键词状态", {
-                type: "success"
-              });
-            }, 200);
-          } else {
-            message(`操作失败，${res.message}`, { type: "error" });
-          }
-        });
-      })
-      .catch(() => {
-        row.enable === 0 ? (row.enable = 1) : (row.enable = 0);
-      });
-  }
-
   function handleDelete(row) {
-    deletectmApi(row.id).then(async res => {
+    deleteFuncApi(row.id).then(async res => {
       if (res.code === 200) {
         message(`您删除了ID为${row.id}的这条数据`, {
           type: "success"
@@ -196,7 +150,7 @@ export function useRole(tableRef: Ref) {
     // 返回当前选中的行
     const curSelected = tableRef.value.getTableRef().getSelectionRows();
     // 接下来根据实际业务，通过选中行的某项数据，比如下面的id，调用接口进行批量删除
-    manyDeletectmApi(getKeyList(curSelected, "id")).then(async res => {
+    manyDeleteFuncApi(getKeyList(curSelected, "id")).then(async res => {
       if (res.code === 200) {
         message(`已删除编号为 ${getKeyList(curSelected, "id")} 的数据`, {
           type: "success"
@@ -221,13 +175,8 @@ export function useRole(tableRef: Ref) {
   async function onSearch() {
     loading.value = true;
     const postData = toRaw(form);
-    console.log(postData.keyword);
-    postData.keyword = postData.keyword || [];
 
-    if (!Array.isArray(postData.keyword)) {
-      postData.keyword = [postData.keyword];
-    }
-    const { data } = await getctmData(postData);
+    const { data } = await getFuncData(postData);
     dataList.value = data.results;
     pagination.total = data.total;
 
@@ -243,11 +192,11 @@ export function useRole(tableRef: Ref) {
 
   function openDialog(title = "新增", row?: FormItemProps) {
     addDialog({
-      title: `${title}关键词`,
+      title: `${title}函数`,
       props: {
         formInline: {
           title,
-          keyword: row?.keyword ?? [],
+          name: row?.name ?? [],
           code: row?.code ?? ""
         }
       },
@@ -261,7 +210,7 @@ export function useRole(tableRef: Ref) {
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
         function chores() {
-          message(`您${title}了关键词为${curData.keyword}的这条数据`, {
+          message(`您${title}了函数名为${curData.name}的这条数据`, {
             type: "success"
           });
           done(); // 关闭弹框
@@ -270,7 +219,7 @@ export function useRole(tableRef: Ref) {
         FormRef.validate(valid => {
           if (valid) {
             if (title === "新增") {
-              createctmApi(curData).then(async res => {
+              createFuncApi(curData).then(async res => {
                 if (res.code === 200) {
                   await chores();
                 } else {
@@ -278,7 +227,7 @@ export function useRole(tableRef: Ref) {
                 }
               });
             } else if (title === "编辑") {
-              Updatectm(row?.id, curData).then(async res => {
+              UpdateFunc(row?.id, curData).then(async res => {
                 if (res.code === 200) {
                   await chores();
                 } else {

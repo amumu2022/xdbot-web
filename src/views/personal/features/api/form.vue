@@ -6,7 +6,7 @@ import { FormProps } from "./utils/types";
 import FromQuestion from "@/components/FromQuestion/index.vue";
 import { useCopyToClipboard } from "@pureadmin/utils";
 import { message } from "@/utils/message";
-import { RunAPI } from "@/api/bot/features/main";
+import { RunAPI } from "@/api/bot/features/customApi";
 import { addDialog } from "@/components/ReDialog";
 import formPrimitive from "./formPrimitive.vue";
 

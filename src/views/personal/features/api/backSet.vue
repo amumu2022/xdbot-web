@@ -1,7 +1,7 @@
 <script lang="ts" setup name="Backset">
 import MdEditor from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
-import { ApiCourse } from "@/api/bot/features/main";
+import { ApiCourse } from "@/api/bot/features/customApi";
 import { ref } from "vue";
 
 const Article = ref("");
