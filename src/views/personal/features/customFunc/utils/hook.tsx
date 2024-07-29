@@ -1,7 +1,7 @@
 /*
  * @Author: xdteam
  * @Date: 2024-07-25 23:39:32
- * @LastEditTime: 2024-07-26 00:03:42
+ * @LastEditTime: 2024-07-27 23:45:24
  * @LastEditors: YourName
  * @Description:
  * @FilePath: \vue-pure-admin\src\views\personal\features\customFunc\utils\hook.tsx
@@ -89,19 +89,7 @@ export function useRole(tableRef: Ref) {
     {
       label: "函数内容",
       prop: "code",
-      minWidth: 380,
-      cellRenderer: ({ row, props }) => (
-        <div
-          class="tag-container"
-          style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;"
-        >
-          {
-            <el-tag size={props.size} type="" effect="dark">
-              {row.code}
-            </el-tag>
-          }
-        </div>
-      )
+      minWidth: 380
     },
     {
       label: "修改时间",
