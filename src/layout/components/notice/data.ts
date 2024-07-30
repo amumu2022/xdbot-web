@@ -6,6 +6,7 @@ import {
 export interface ListItem {
   title: string;
   bot_id: string;
+  nickname: string;
   title2: string;
   message: string;
   datetime: string;

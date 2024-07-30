@@ -76,7 +76,7 @@ function hoverDescription(event, message) {
       </div>
       <div class="notice-text-datetime text-[#00000073] dark:text-white">
         {{
-          `${props.noticeItem.datetime}&emsp;&emsp;&emsp;&emsp;小墩插件(${props.noticeItem?.bot_id})`
+          `${props.noticeItem.datetime}&emsp;&emsp;&emsp;&emsp;${props.noticeItem?.nickname}(${props.noticeItem?.bot_id})`
         }}
       </div>
       <div class="notice-title-content">

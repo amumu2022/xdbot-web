@@ -76,13 +76,17 @@ export function CloseWs() {
 function noticeItem(logData) {
   const type = logData.type;
   const group_id = logData.data?.group_id;
+  const nickname = logData.data?.nickname;
+  const user_name = logData.data?.sender.nickname;
   const user_id = logData.data?.user_id;
+  const group_name = logData.data?.group_name;
   let data = {};
   if (logData.name == "send_msg") {
     data = {
       title: `${type === "group" ? group_id : user_id}`,
       title2: "",
       bot_id: logData.bot,
+      nickname: nickname,
       message: logData.message,
       datetime: logData.time,
       extra: type === "group" ? "群聊" : "私聊",
@@ -91,9 +95,13 @@ function noticeItem(logData) {
     SendData.value.unshift(data);
   } else if (logData.name == "message") {
     data = {
-      title: `${type === "group" ? group_id : user_id}`,
+      title: `${type === "group" ? group_name : user_name} (${
+        type === "group" ? group_id : user_id
+      })`,
       bot_id: logData.bot,
-      title2: `${logData.data?.sender.nickname} (${logData.data?.sender.user_id}) `,
+      title2: `${user_name} (${logData.data?.sender.user_id}) `,
+      nickname: nickname,
+      group_name: group_name,
       message: logData.message,
       datetime: logData.time,
       extra: type === "group" ? "群聊" : "私聊",
@@ -105,6 +113,7 @@ function noticeItem(logData) {
       title: `${type === "group" ? group_id : user_id}`,
       title2: "",
       bot_id: logData.bot,
+      nickname: nickname,
       message: makeNotice(type, user_id, group_id, logData.data),
       datetime: logData.time,
       extra: "事件消息",
@@ -116,6 +125,7 @@ function noticeItem(logData) {
       title: `${type === "group" ? group_id : user_id}`,
       title2: "",
       bot_id: logData.bot,
+      nickname: nickname,
       message: makeRequest(type, user_id, group_id, logData.data),
       datetime: logData.time,
       extra: "请求消息",

@@ -72,16 +72,16 @@ async function getGlobal(bot_id: string) {
     const res = await getQuanjuInfo(bot_id);
 
     if (res.code === 200) {
-      const data = res.data;
-      const reqData = data || newFormInline.value;
-
+      const reqData = res.data;
       // 检查并初始化可能缺失的属性
-      reqData.group = reqData.group || newFormInline.value.group;
-      reqData.sendmsg = reqData.sendmsg || newFormInline.value.sendmsg;
-      reqData.other = reqData.other || newFormInline.value.other;
-      reqData.dynamic = reqData.dynamic || newFormInline.value.dynamic;
+      const middleData = newFormInline.value;
+      reqData.group = reqData.group || middleData.group;
+      reqData.sendmsg = reqData.sendmsg || middleData.sendmsg;
+      reqData.other = reqData.other || middleData.other;
+      reqData.dynamic = reqData.dynamic || middleData.dynamic;
 
-      newFormInline.value = reqData;
+      newFormInline.value = { ...reqData };
+
       newFormInline.value.group.bot_id = bot_id;
       adjutantOptions.value = newFormInline.value.group?.adjutantList;
     } else {
