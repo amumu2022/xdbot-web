@@ -144,6 +144,40 @@ export function GetSkeys(numStrings: number = 1, length: number = 12): string {
 }
 
 /**
+ * 生成特定数量密匙：
+ * @param mode 模式，1：大写，2：小写，3：混合
+ * @param length 长度
+ * @returns
+ */
+export function generateRandomLetters(
+  mode: 1 | 2 | 3,
+  length: number = 6
+): string {
+  let characters: string;
+  switch (mode) {
+    case 1: // 大写
+      characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      break;
+    case 2: // 小写
+      characters = "abcdefghijklmnopqrstuvwxyz";
+      break;
+    case 3: // 混合
+      characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+      break;
+    default:
+      throw new Error(
+        "Invalid mode. Please choose 1 for uppercase, 2 for lowercase, or 3 for mixed."
+      );
+  }
+
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
+/**
  * 判断时间是否过期的函数
  * @param old_time
  * @returns

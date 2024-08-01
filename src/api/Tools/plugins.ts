@@ -1,7 +1,7 @@
 /*
  * @Author: xdteam
  * @Date: 2024-05-28 21:34:05
- * @LastEditTime: 2024-07-01 20:43:10
+ * @LastEditTime: 2024-08-02 00:20:59
  * @LastEditors: YourName
  * @Description:
  * @FilePath: \vue-pure-admin\src\api\Tools\plugins.ts
@@ -44,6 +44,28 @@ export const UpdatePluginsApi = (data?: object) => {
 /** 更新插件状态 */
 export const UpdatePlugins_status = (data?: object) => {
   return http.request<ResultDetail>("put", "/api/v1/plugins/status", {
+    data: data
+  });
+};
+
+/** 获取插件代码 */
+export const GetPluginCode = folder => {
+  return http.request<ResultDetail>(
+    "get",
+    `/api/v1/plugins/get/code/${folder}`
+  );
+};
+
+/** 插件更新代码 */
+export const UpdatePluginCodeApi = (data?: object) => {
+  return http.request<ResultDetail>("post", "/api/v1/plugins/update/code", {
+    data: data
+  });
+};
+
+/** 添加本地插件 */
+export const createPluginLocalApi = (data?: object) => {
+  return http.request<ResultDetail>("post", "/api/v1/plugins/add/local", {
     data: data
   });
 };

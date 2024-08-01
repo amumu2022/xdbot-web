@@ -1,189 +1,34 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive, toRaw } from "vue";
+import { ref } from "vue";
 import CardMax from "@/components/ReCardMax/CardMax.vue";
-import { useBasicLayout } from "@/hooks/useBasicLayout";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import Search from "@iconify-icons/ep/search";
 import Refresh from "@iconify-icons/ep/refresh";
 import AddFill from "@iconify-icons/ri/add-circle-line";
-import { useRouter } from "vue-router";
-import { message } from "@/utils/message";
-import { ElMessageBox } from "element-plus";
-import { downloadByUrl } from "@pureadmin/utils";
+import { useRole } from "./utils/hook";
 
-import {
-  getPluginsList,
-  UpdatePluginsApi,
-  getPluginsAllList,
-  createPluginsApi,
-  deletePluginsApi,
-  UpdatePlugins_status
-} from "@/api/Tools/plugins";
-const { isMobile } = useBasicLayout();
-const loading = ref(true);
+const {
+  onPageSizeChange,
+  onSearch,
+  searchStatus,
+  productList,
+  pagination,
+  form,
+  loading,
+  resetForm,
+  openDialog,
+  onCurrentChange,
+  handleClickDetial,
+  handleClickUpdate,
+  handleClickStop,
+  handleClickReport,
+  handleClickDelete,
+  handleClickDownloads,
+  handleClickInstall,
+  handleClickEdit
+} = useRole();
+
 const formRef = ref();
-const router = useRouter();
-const form = reactive({
-  name: "",
-  installed: "1",
-  enable: undefined
-});
-
-const searchStatus = ref(false);
-const productList = ref([]);
-
-const pagination = ref({ current: 1, pageSize: 12, total: 0 });
-
-// 筛选已经安装的插件
-function completeInstalledPlugins(
-  allPlugins: any[],
-  installedPlugins: any[]
-): Array<{ [key: string]: any }> {
-  const pluginMap = new Map(allPlugins.map(plugin => [plugin.name, plugin]));
-
-  return installedPlugins.map(installedPlugin => {
-    const fullPlugin = pluginMap.get(installedPlugin.name);
-
-    if (fullPlugin) {
-      return { ...fullPlugin, ...installedPlugin };
-    }
-
-    return installedPlugin;
-  });
-}
-
-async function onSearch() {
-  try {
-    const post_data = toRaw(form);
-    const name = post_data.name;
-    const enable = post_data.enable;
-    if (enable == "") {
-      post_data.enable = undefined;
-    }
-    const installedPluginsData = await getPluginsList(toRaw(form));
-    const installedPlugins = installedPluginsData.data.results;
-
-    const installed = post_data.installed;
-    const { data } = await getPluginsAllList();
-
-    productList.value = data.results.filter(product =>
-      product.name.includes(name)
-    );
-
-    if (installed === "1") {
-      productList.value = completeInstalledPlugins(
-        productList.value,
-        installedPlugins
-      );
-    }
-
-    pagination.value = {
-      ...pagination.value,
-      total: productList.value.length
-    };
-  } catch (e) {
-    console.log(e);
-  } finally {
-    setTimeout(() => {
-      loading.value = false;
-    }, 500);
-  }
-}
-
-const onPageSizeChange = (size: number) => {
-  pagination.value.pageSize = size;
-  pagination.value.current = 1;
-};
-const onCurrentChange = (current: number) => {
-  pagination.value.current = current;
-};
-
-const handleClickDetial = product => {
-  message(`${product.name} 还在开发进程中`, { type: "error" });
-};
-const handleClickUpdate = product => {
-  UpdatePluginsApi(product).then(async res => {
-    if (res.code === 200) {
-      message(`插件 ${product.name} 更新成功`, { type: "success" });
-      onSearch();
-    } else {
-      message(`操作失败，${res.message}`, { type: "error" });
-    }
-  });
-};
-
-const handleClickStop = product => {
-  const enable = product.enable;
-  UpdatePlugins_status(product).then(async res => {
-    if (res.code === 200) {
-      message(`插件 ${product.name} ${enable ? "已停用" : "已启用"}`, {
-        type: "success"
-      });
-      onSearch();
-    } else {
-      message(`操作失败，${res.message}`, { type: "error" });
-    }
-  });
-};
-
-const handleClickReport = product => {
-  message(`插件 ${product.name} 举报失败`, { type: "error" });
-};
-
-const handleClickDelete = product => {
-  deletePluginsApi(product).then(async res => {
-    if (res.code === 200) {
-      message(`插件 ${product.name} 卸载成功`, { type: "warning" });
-      onSearch();
-    } else {
-      message(`操作失败，${res.message}`, { type: "error" });
-    }
-  });
-};
-
-const handleClickDownloads = product => {
-  downloadByUrl(product.url, `${product.name}.py`);
-};
-
-const handleClickInstall = product => {
-  createPluginsApi(product).then(async res => {
-    if (res.code === 200) {
-      message(`插件 ${product.name} 安装成功`, { type: "success" });
-      onSearch();
-    } else {
-      message(`操作失败，${res.message}`, { type: "error" });
-    }
-  });
-
-  onSearch();
-};
-
-function turnToFileSet() {
-  ElMessageBox.confirm(
-    `确定跳转到<strong>文件管理页面</strong>吗?<br>请进入<strong>plugins</strong>文件夹开始编写插件`,
-    "系统提示",
-    {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-      dangerouslyUseHTMLString: true,
-      draggable: true
-    }
-  ).then(() => {
-    router.push({ name: "WebFile" });
-  });
-}
-
-const resetForm = formEl => {
-  if (!formEl) return;
-  formEl.resetFields();
-  onSearch();
-};
-
-onMounted(async () => {
-  onSearch();
-  searchStatus.value = !isMobile.value;
-});
 
 defineOptions({
   name: "PluginsCenter"
@@ -221,7 +66,7 @@ const svg = `
           <el-button
             :icon="useRenderIcon(AddFill)"
             type="success"
-            @click="turnToFileSet"
+            @click="openDialog()"
           >
             新建插件
           </el-button>
@@ -323,6 +168,7 @@ const svg = `
               @product-delete="handleClickDelete"
               @product-download="handleClickDownloads"
               @product-install="handleClickInstall"
+              @product-edit="handleClickEdit"
             />
           </el-col>
         </el-row>

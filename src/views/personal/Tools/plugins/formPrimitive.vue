@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useVModel } from "@vueuse/core";
+
 // 声明 props 类型
 export interface FormProps {
   data: string;
@@ -19,14 +20,9 @@ const data = useVModel(props, "data", emit);
     <el-input
       type="textarea"
       class="!w-full"
-      rows="15"
+      rows="5"
       v-model="data"
-      readonly
+      placeholder="请输入内容"
     />
   </div>
 </template>
-<style scoped>
-.el-input__inner::placeholder {
-  color: #7b2727 !important;
-}
-</style>

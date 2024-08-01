@@ -31,7 +31,8 @@ const emit = defineEmits([
   "product-report",
   "product-delete",
   "product-download",
-  "product-install"
+  "product-install",
+  "product-edit"
 ]);
 
 const handleClickDetial = (product: CardProductType) => {
@@ -60,6 +61,11 @@ const handleClickDownloads = (product: CardProductType) => {
 const handleClickInstall = (product: CardProductType) => {
   emit("product-install", product);
 };
+
+const handleClickEdit = (product: CardProductType) => {
+  emit("product-edit", product);
+};
+
 const cardClass = computed(() => [
   "list-card-item",
   { "list-card-item__disabled": !props.product.enable }
@@ -97,6 +103,12 @@ const score_value = props.product.score;
           <IconifyIconOffline :icon="More2Fill" class="text-[24px]" />
           <template #dropdown>
             <el-dropdown-menu>
+              <el-dropdown-item
+                @click="handleClickEdit(product)"
+                style="color: green"
+              >
+                编辑
+              </el-dropdown-item>
               <el-dropdown-item @click="handleClickDetial(product)">
                 简介
               </el-dropdown-item>
