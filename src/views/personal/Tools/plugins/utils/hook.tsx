@@ -1,7 +1,7 @@
 /*
  * @Author: xdteam
  * @Date: 2024-07-25 23:39:32
- * @LastEditTime: 2024-08-01 23:25:32
+ * @LastEditTime: 2024-08-03 00:56:24
  * @LastEditors: YourName
  * @Description:
  * @FilePath: \vue-pure-admin\src\views\personal\Tools\plugins\utils\hook.tsx
@@ -21,12 +21,14 @@ import {
   UpdatePluginCodeApi,
   createPluginLocalApi
 } from "@/api/Tools/plugins";
+import { restartCode } from "@/api/system/monitor";
 import { downloadByUrl } from "@pureadmin/utils";
 import { generateRandomLetters } from "@/utils/xdteam";
 import { addDialog } from "@/components/ReDialog";
 import { type FormItemProps } from "./types";
 import { useBasicLayout } from "@/hooks/useBasicLayout";
 import { h, ref, toRaw, reactive, onMounted } from "vue";
+import { ElMessageBox } from "element-plus";
 
 export function useRole() {
   const form = reactive({
@@ -230,12 +232,36 @@ export function useRole() {
           done(); // 关闭弹框
           onSearch(); // 刷新表格数据
         }
+
+        async function funcRestart() {
+          try {
+            await ElMessageBox.confirm(
+              `编辑完成！请确定是否<strong><span style='color:red'>立即重启系统</span></strong>`,
+              "系统提示",
+              {
+                confirmButtonText: "立即重启",
+                cancelButtonText: "取消",
+                type: "warning",
+                dangerouslyUseHTMLString: true,
+                draggable: true
+              }
+            );
+            message(`系统重启中`, {
+              type: "warning"
+            });
+            await restartCode();
+            done(); // 关闭弹框
+          } catch (error) {
+            await chores();
+          }
+        }
+
         FormRef.validate(valid => {
           if (valid) {
             if (title === "新增") {
               createPluginLocalApi(curData).then(async res => {
                 if (res.code === 200) {
-                  await chores();
+                  await funcRestart();
                 } else {
                   message(`操作失败，${res.message}`, { type: "error" });
                 }
@@ -243,7 +269,7 @@ export function useRole() {
             } else if (title === "编辑") {
               UpdatePluginCodeApi(curData).then(async res => {
                 if (res.code === 200) {
-                  await chores();
+                  await funcRestart();
                 } else {
                   message(`操作失败，${res.message}`, { type: "error" });
                 }

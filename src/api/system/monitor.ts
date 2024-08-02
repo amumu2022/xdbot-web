@@ -13,6 +13,12 @@ export type ServerInfo = {
   diskInfos?: any;
   python?: string;
 };
+
+/** 系统重启 */
+export const restartCode = () => {
+  return http.request<ServerInfo>("get", "/api/v1/restart");
+};
+
 /** 获取服务器信息 */
 export const getServerInfoApi = () => {
   return http.request<ServerInfo>("get", "/api/v1/monitor/serverInfo");
