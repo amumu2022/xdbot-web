@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
 import { utils, writeFile } from "xlsx";
 import { message } from "@/utils/message";
+import * as cronParser from 'cron-parser';
+
 
 /**
  * 根据现在时间返回文本
@@ -233,3 +235,33 @@ export function unescapeCQCodeParameters(value) {
     .replace(/&#44;/g, ",")
     .replace(/&amp;/g, "&");
 }
+
+
+/**
+ * 解析cron表达式
+ * @param str
+ * @returns
+ */
+export function parser_cron(cronExpression: string) {
+  // 定义 cron 表达式和选项类型
+    const nowDate = new Date()
+
+  const options: cronParser.ParserOptions = {
+    currentDate: nowDate,  // 当前时间
+    tz: 'Asia/Shanghai'                 // 设置时区（可选）
+  };
+
+  try {
+    // 解析 cron 表达式并获取时间序列
+    const interval = cronParser.parseExpression(cronExpression, options);
+
+    // 获取最近十次工作时间
+    const dates: string[] = [];
+    for (let i = 0; i < 10; i++) {
+      dates.push(interval.next().toString());
+    }
+    return dates
+  } catch (err) {
+    return [nowDate]
+  }
+  }

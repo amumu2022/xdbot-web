@@ -27,21 +27,6 @@ export const getScript = id => {
     `/api/v1/dock/script/content?name=${id}`
   );
 };
-/** 获取脚本内容 */
-export const getScriptLog = id => {
-  return http.request<ResultDetail>(
-    "get",
-    `/api/v1/dock/script/log?name=${id}`
-  );
-};
-
-/** 获取脚本内容 */
-export const RunScript = id => {
-  return http.request<ResultDetail>(
-    "put",
-    `/api/v1/dock/script/run?name=${id}`
-  );
-};
 
 /** 获取脚本列表 */
 export const getScriptData = (data?: object) => {

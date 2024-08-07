@@ -102,8 +102,17 @@ defineExpose({ getRef });
         <re-col :value="12" :xs="24" :sm="24">
           <el-form-item label="插件名称" prop="name">
             <el-input
+              v-if="newFormInline.title !== '编辑'"
               v-model="newFormInline.name"
               clearable
+              placeholder="请输入插件名称"
+            />
+            <!-- 当title为“编辑”时，显示为只读状态 -->
+            <el-input
+              v-else
+              v-model="newFormInline.name"
+              clearable
+              readonly
               placeholder="请输入插件名称"
             />
           </el-form-item>
@@ -127,6 +136,7 @@ defineExpose({ getRef });
             />
           </el-form-item>
         </re-col>
+
         <re-col :value="24" :xs="24" :sm="24">
           <el-form-item label="插件图片" prop="image">
             <el-input

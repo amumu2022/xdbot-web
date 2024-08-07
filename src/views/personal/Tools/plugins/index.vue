@@ -5,6 +5,7 @@ import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import Search from "@iconify-icons/ep/search";
 import Refresh from "@iconify-icons/ep/refresh";
 import AddFill from "@iconify-icons/ri/add-circle-line";
+import RestartFill from "@iconify-icons/ri/restart-fill";
 import { useRole } from "./utils/hook";
 
 const {
@@ -25,7 +26,8 @@ const {
   handleClickDelete,
   handleClickDownloads,
   handleClickInstall,
-  handleClickEdit
+  handleClickEdit,
+  funcRestart
 } = useRole();
 
 const formRef = ref();
@@ -69,6 +71,13 @@ const svg = `
             @click="openDialog()"
           >
             新建插件
+          </el-button>
+          <el-button
+            :icon="useRenderIcon(RestartFill)"
+            type="danger"
+            @click="funcRestart()"
+          >
+            重启系统
           </el-button>
         </el-form-item>
 

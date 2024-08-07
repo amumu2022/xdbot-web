@@ -1,7 +1,7 @@
 /*
  * @Author: xdteam
  * @Date: 2024-07-25 23:39:32
- * @LastEditTime: 2024-08-03 00:56:24
+ * @LastEditTime: 2024-08-03 08:24:47
  * @LastEditors: YourName
  * @Description:
  * @FilePath: \vue-pure-admin\src\views\personal\Tools\plugins\utils\hook.tsx
@@ -114,8 +114,10 @@ export function useRole() {
   const handleClickUpdate = product => {
     UpdatePluginsApi(product).then(async res => {
       if (res.code === 200) {
-        message(`插件 ${product.name} 更新成功`, { type: "success" });
         onSearch();
+        message(`插件 ${product.name} 更新成功，需要手动重启系统重载插件`, {
+          type: "success"
+        });
       } else {
         message(`操作失败，${res.message}`, { type: "error" });
       }
@@ -126,10 +128,10 @@ export function useRole() {
     const enable = product.enable;
     UpdatePlugins_status(product).then(async res => {
       if (res.code === 200) {
+        onSearch();
         message(`插件 ${product.name} ${enable ? "已停用" : "已启用"}`, {
           type: "success"
         });
-        onSearch();
       } else {
         message(`操作失败，${res.message}`, { type: "error" });
       }
@@ -143,8 +145,10 @@ export function useRole() {
   const handleClickDelete = product => {
     deletePluginsApi(product).then(async res => {
       if (res.code === 200) {
-        message(`插件 ${product.name} 卸载成功`, { type: "warning" });
         onSearch();
+        message(`插件 ${product.name} 卸载成功，需要手动重启系统重载插件`, {
+          type: "warning"
+        });
       } else {
         message(`操作失败，${res.message}`, { type: "error" });
       }
@@ -158,15 +162,34 @@ export function useRole() {
   const handleClickInstall = product => {
     createPluginsApi(product).then(async res => {
       if (res.code === 200) {
-        message(`插件 ${product.name} 安装成功`, { type: "success" });
         onSearch();
+        message(`插件 ${product.name} 安装成功，需要手动重启系统重载插件`, {
+          type: "success"
+        });
       } else {
         message(`操作失败，${res.message}`, { type: "error" });
       }
     });
-
-    onSearch();
   };
+
+  function funcRestart() {
+    ElMessageBox.confirm(
+      `请确定是否<strong><span style='color:red'>立即重启系统</span></strong>`,
+      "系统提示",
+      {
+        confirmButtonText: "立即重启",
+        cancelButtonText: "取消",
+        type: "warning",
+        dangerouslyUseHTMLString: true,
+        draggable: true
+      }
+    ).then(() => {
+      message(`系统重启中`, {
+        type: "warning"
+      });
+      restartCode();
+    });
+  }
 
   async function handleClickEdit(product) {
     if (product.enable) {
@@ -226,34 +249,14 @@ export function useRole() {
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
         function chores() {
-          message(`您${title}了插件名为${curData.name}的这条数据`, {
-            type: "success"
-          });
+          message(
+            `您${title}了插件名为${curData.name}的这条数据，需要手动重启系统重载插件`,
+            {
+              type: "success"
+            }
+          );
           done(); // 关闭弹框
           onSearch(); // 刷新表格数据
-        }
-
-        async function funcRestart() {
-          try {
-            await ElMessageBox.confirm(
-              `编辑完成！请确定是否<strong><span style='color:red'>立即重启系统</span></strong>`,
-              "系统提示",
-              {
-                confirmButtonText: "立即重启",
-                cancelButtonText: "取消",
-                type: "warning",
-                dangerouslyUseHTMLString: true,
-                draggable: true
-              }
-            );
-            message(`系统重启中`, {
-              type: "warning"
-            });
-            await restartCode();
-            done(); // 关闭弹框
-          } catch (error) {
-            await chores();
-          }
         }
 
         FormRef.validate(valid => {
@@ -261,7 +264,7 @@ export function useRole() {
             if (title === "新增") {
               createPluginLocalApi(curData).then(async res => {
                 if (res.code === 200) {
-                  await funcRestart();
+                  await chores();
                 } else {
                   message(`操作失败，${res.message}`, { type: "error" });
                 }
@@ -269,7 +272,7 @@ export function useRole() {
             } else if (title === "编辑") {
               UpdatePluginCodeApi(curData).then(async res => {
                 if (res.code === 200) {
-                  await funcRestart();
+                  await chores();
                 } else {
                   message(`操作失败，${res.message}`, { type: "error" });
                 }
@@ -283,6 +286,7 @@ export function useRole() {
 
   return {
     onPageSizeChange,
+    funcRestart,
     onSearch,
     searchStatus,
     productList,

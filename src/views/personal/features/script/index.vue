@@ -2,11 +2,7 @@
 import { useRole } from "./utils/hook";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import { ref, h, onMounted } from "vue";
-import { getScriptLog, RunScript } from "@/api/system/dock";
-import { message } from "@/utils/message";
-import { addDialog } from "@/components/ReDialog";
-import formPrimitive from "./formPrimitive.vue";
+import { ref, onMounted } from "vue";
 import fold_down from "@iconify-icons/ep/caret-bottom";
 import fold_up from "@iconify-icons/ep/caret-top";
 onMounted(() => {
@@ -21,58 +17,12 @@ import EditPen from "@iconify-icons/ep/edit-pen";
 import Search from "@iconify-icons/ep/search";
 import Refresh from "@iconify-icons/ep/refresh";
 import AddFill from "@iconify-icons/ri/add-circle-line";
-import CheckboxCircleLine from "@iconify-icons/ri/checkbox-circle-line";
-import UbuntuFill from "@iconify-icons/ri/ubuntu-fill";
 defineOptions({
   name: "FeaturesScript"
 });
 
 const formRef = ref();
 const tableRef = ref();
-
-function run(name: string) {
-  RunScript(name).then(async res => {
-    if (res.code !== 200) {
-      message(`操作失败，${res.message}`, { type: "error" });
-      return "";
-    } else {
-      message(`运行成功`, { type: "success" });
-    }
-  });
-}
-// 子组件 prop 为 primitive 类型的 demo
-const formPrimitiveParam = ref("");
-const resetFormPrimitiveParam = ref(formPrimitiveParam.value);
-
-function log(name: string) {
-  getScriptLog(name).then(res => {
-    if (res.code !== 200) {
-      message(`操作失败，${res.message}`, { type: "error" });
-      return "";
-    } else {
-      const data = JSON.parse(res.data);
-      const text1 = `## 开始执行... ${data.begin_time}`;
-      const text2 = `${data.log}`;
-      const text3 = `## 执行结束... ${data.end_time}  耗时：${data.use_time}秒`;
-      addDialog({
-        title: "日志详情",
-        width: "46%",
-        draggable: true,
-        fullscreenIcon: true,
-        fullscreen: isMobile.value ? true : false,
-        contentRenderer: () =>
-          h(formPrimitive, {
-            data: `${text1}\n\n${text2}\n${text3}`,
-            "onUpdate:data": val => (formPrimitiveParam.value = val)
-          }),
-        closeCallBack: () => {
-          // 重置表单数据
-          formPrimitiveParam.value = resetFormPrimitiveParam.value;
-        }
-      });
-    }
-  });
-}
 
 const {
   form,
@@ -200,28 +150,6 @@ const {
               :size="size"
               :icon="useRenderIcon(EditPen)"
               @click="openDialog('编辑', row)"
-            />
-            <el-popconfirm
-              :title="`是否确认运行脚本：${row.name}`"
-              @confirm="run(row.name)"
-            >
-              <template #reference>
-                <el-button
-                  class="reset-margin"
-                  circle
-                  type="success"
-                  :size="size"
-                  :icon="useRenderIcon(UbuntuFill)"
-                />
-              </template>
-            </el-popconfirm>
-            <el-button
-              class="reset-margin"
-              circle
-              type="primary"
-              :size="size"
-              :icon="useRenderIcon(CheckboxCircleLine)"
-              @click="log(row.name)"
             />
             <el-popconfirm
               :title="`是否确认删除脚本编号为${row.id}的这条数据`"

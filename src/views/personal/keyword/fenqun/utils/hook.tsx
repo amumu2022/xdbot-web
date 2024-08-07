@@ -47,7 +47,6 @@ export function useRole(tableRef: Ref) {
   };
   const exportExcel = () => {
     ExportExcel(dataList, columns);
-
   };
   const columns: TableColumnList = [
     {
@@ -283,9 +282,7 @@ export function useRole(tableRef: Ref) {
         }
         FormRef.validate(valid => {
           if (valid) {
-            
             if (title === "新增") {
-     
               createFenqunApi(curData).then(async res => {
                 if (res.code === 200) {
                   await chores();
@@ -294,7 +291,6 @@ export function useRole(tableRef: Ref) {
                 }
               });
             } else if (title === "编辑") {
-              
               UpdateFenqun(row?.id, curData).then(async res => {
                 if (res.code === 200) {
                   await chores();

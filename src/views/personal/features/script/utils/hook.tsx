@@ -1,7 +1,7 @@
 /*
  * @Author: xdteam
  * @Date: 2023-11-16 23:30:18
- * @LastEditTime: 2024-04-18 20:50:53
+ * @LastEditTime: 2024-08-07 22:48:04
  * @LastEditors: YourName
  * @Description:
  * @FilePath: \vue-pure-admin\src\views\personal\features\script\utils\hook.tsx
@@ -93,7 +93,7 @@ export function useRole(tableRef: Ref) {
     {
       label: "操作",
       fixed: "right",
-      width: 190,
+      width: 110,
       slot: "operation"
     }
   ];
@@ -115,22 +115,18 @@ export function useRole(tableRef: Ref) {
   /** 当CheckBox选择项发生变化时会触发该事件 */
   function handleSelectionChange(val) {
     selectedNum.value = val.length;
-    // 重置表格高度
     tableRef.value.setAdaptive();
   }
 
   /** 取消选择 */
   function onSelectionCancel() {
     selectedNum.value = 0;
-    // 用于多选表格，清空脚本的选择
     tableRef.value.getTableRef().clearSelection();
   }
 
   /** 批量删除 */
   function onbatchDel() {
-    // 返回当前选中的行
     const curSelected = tableRef.value.getTableRef().getSelectionRows();
-    // 接下来根据实际业务，通过选中行的某项数据，比如下面的id，调用接口进行批量删除
     manyDeleteScriptApi(getKeyList(curSelected, "id")).then(async res => {
       if (res.code === 200) {
         message(`已删除脚本编号为 ${getKeyList(curSelected, "id")} 的数据`, {
@@ -255,7 +251,13 @@ export function useRole(tableRef: Ref) {
         beforeSure: (done, { options }) => {
           const FormRef = formRef.value.getRef();
           const curData = options.props.formInline as FormItemProps;
-
+          function chores() {
+            message(`您${title}了脚本为${curData.name}的这条数据`, {
+              type: "success"
+            });
+            done(); // 关闭弹框
+            onSearch(); // 刷新表格数据
+          }
           FormRef.validate(valid => {
             if (valid) {
               const code = curData.content;
@@ -276,8 +278,8 @@ export function useRole(tableRef: Ref) {
 
                 createScriptApi(post_data).then(async res => {
                   if (res.code === 200) {
-                    message(`操作成功，请稍后手动刷新`, { type: "success" });
-                    done(); // 关闭弹框
+                    message(`操作成功`, { type: "success" });
+                    await chores(); 
                   } else {
                     message(`操作失败，${res.message}`, { type: "error" });
                   }

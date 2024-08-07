@@ -1,15 +1,6 @@
 <!--
  * @Author: xdteam
  * @Date: 2024-04-18 21:36:31
- * @LastEditTime: 2024-04-18 22:12:11
- * @LastEditors: YourName
- * @Description: 
- * @FilePath: \vue-pure-admin\src\views\personal\Tools\scheduler\fileDetial.vue
- * 版权声明
--->
-<!--
- * @Author: xdteam
- * @Date: 2024-04-18 21:36:31
  * @LastEditTime: 2024-04-18 22:10:12
  * @LastEditors: YourName
  * @Description: 

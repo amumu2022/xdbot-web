@@ -7,6 +7,10 @@ import EditPen from "@iconify-icons/ep/edit-pen";
 import Search from "@iconify-icons/ep/search";
 import Refresh from "@iconify-icons/ep/refresh";
 import AddFill from "@iconify-icons/ri/add-circle-line";
+import More from "@iconify-icons/ep/more-filled";
+import runFill from "@iconify-icons/ri/ubuntu-fill";
+import logFill from "@iconify-icons/ep/chat-round";
+import StopFill from "@iconify-icons/ep/stopwatch";
 
 import { ref } from "vue";
 
@@ -23,12 +27,17 @@ const {
   dataList,
   selectedNum,
   pagination,
+  buttonClass,
   onSearch,
+  manyHandleRun,
+  manyHandleStop,
+  handleRun,
+  handleStop,
+  handleLog,
   resetForm,
   openDialog,
   exportExcel,
   handleDelete,
-  taskTypeOptions,
   onbatchDel,
   onSelectionCancel,
   handleSizeChange,
@@ -45,20 +54,39 @@ const {
       :model="form"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
     >
-      <el-form-item label="任务类型：" prop="id_code">
-        <el-select
-          v-model="form.id_code"
-          placeholder="请选择任务类型"
+      <el-form-item label="任务名称：" prop="name">
+        <el-input
+          v-model="form.name"
+          placeholder="请输入关键词名称"
           clearable
           class="!w-[160px]"
+          @keyup.enter="onSearch()"
+        />
+      </el-form-item>
+
+      <el-form-item label="状态：" prop="enable">
+        <el-select
+          v-model="form.enable"
+          placeholder="请选择"
+          clearable
+          class="!w-[100px]"
           @change="onSearch()"
         >
-          <el-option
-            v-for="(item, index) in taskTypeOptions"
-            :key="index"
-            :label="item.label"
-            :value="item.value"
-          />
+          <el-option label="已启用" :value="true" />
+          <el-option label="已停用" :value="false" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="运行状态：" prop="status">
+        <el-select
+          v-model="form.status"
+          placeholder="请选择"
+          clearable
+          class="!w-[100px]"
+          @change="onSearch()"
+        >
+          <el-option label="运行中" :value="1" />
+          <el-option label="空闲中" :value="0" />
         </el-select>
       </el-form-item>
 
@@ -105,6 +133,16 @@ const {
               取消选择
             </el-button>
           </div>
+          <el-popconfirm title="是否确认运行?" @confirm="manyHandleRun">
+            <template #reference>
+              <el-button type="success" text class="mr-1"> 批量运行 </el-button>
+            </template>
+          </el-popconfirm>
+          <el-popconfirm title="是否确认停止?" @confirm="manyHandleStop">
+            <template #reference>
+              <el-button type="warning" text class="mr-1"> 批量停止 </el-button>
+            </template>
+          </el-popconfirm>
           <el-popconfirm title="是否确认删除?" @confirm="onbatchDel">
             <template #reference>
               <el-button type="danger" text class="mr-1"> 批量删除 </el-button>
@@ -136,14 +174,14 @@ const {
           <template #operation="{ row }">
             <el-button
               class="reset-margin"
+              circle
               type="primary"
               :size="size"
               :icon="useRenderIcon(EditPen)"
-              circle
               @click="openDialog('编辑', row)"
             />
             <el-popconfirm
-              :title="`是否确认删除任务编号编号为${row.id_code}的这条数据`"
+              :title="`是否确认删除任务编号为${row.id}的这条数据`"
               @confirm="handleDelete(row)"
             >
               <template #reference>
@@ -156,6 +194,55 @@ const {
                 />
               </template>
             </el-popconfirm>
+            <el-dropdown>
+              <el-button
+                class="ml-3 mt-[2px]"
+                link
+                type="primary"
+                :size="size"
+                :icon="useRenderIcon(More)"
+              />
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item>
+                    <el-button
+                      :class="buttonClass"
+                      link
+                      type="primary"
+                      :size="size"
+                      :icon="useRenderIcon(runFill)"
+                      @click="handleRun(row.id)"
+                    >
+                      运行脚本
+                    </el-button>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    <el-button
+                      :class="buttonClass"
+                      link
+                      type="primary"
+                      :size="size"
+                      :icon="useRenderIcon(logFill)"
+                      @click="handleLog(row.id)"
+                    >
+                      查看日志
+                    </el-button>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    <el-button
+                      :class="buttonClass"
+                      link
+                      type="danger"
+                      :size="size"
+                      :icon="useRenderIcon(StopFill)"
+                      @click="handleStop(row.id)"
+                    >
+                      停止脚本
+                    </el-button>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </pure-table>
       </template>

@@ -1,13 +1,19 @@
 import dayjs from "dayjs";
 import editForm from "../form.vue";
 import CodeForm from "../fileDetial.vue";
+import formPrimitive from "../formPrimitive.vue";
+
 import { message } from "@/utils/message";
 import {
   getTaskData,
   UpdateTask_status,
   createTaskApi,
   deleteTaskApi,
-  manyDeleteTaskApi
+  manyDeleteTaskApi,
+  GetTaskLog,
+  RunTaskApi,
+  StopTaskApi,
+  UpdateTask
 } from "@/api/Tools/scheduler";
 import { getScript, getScriptData } from "@/api/system/dock";
 import { ElMessageBox } from "element-plus";
@@ -16,43 +22,20 @@ import { addDialog } from "@/components/ReDialog";
 import { type FormItemProps } from "../utils/types";
 import { type PaginationProps } from "@pureadmin/table";
 import { getKeyList } from "@pureadmin/utils";
-import { ExportExcel } from "@/utils/xdteam";
-import { type Ref, h, ref, toRaw, reactive, onMounted } from "vue";
+import { ExportExcel, parser_cron } from "@/utils/xdteam";
+import { type Ref, h, ref, toRaw, computed, reactive, onMounted } from "vue";
 import { useBasicLayout } from "@/hooks/useBasicLayout";
 
 const { isMobile } = useBasicLayout();
 
 export function useRole(tableRef: Ref) {
   const form = reactive({
-    id_code: 5,
-    enable: "",
-    work_timestamp: undefined,
+    name: "",
+    enable: undefined,
+    status: undefined,
     currentPage: 1,
     pageSize: 10
   });
-
-  const taskTypeOptions = [
-    // {
-    //   value: 1,
-    //   label: "全局本地任务"
-    // },
-    // {
-    //   value: 2,
-    //   label: "全局功能任务"
-    // },
-    // {
-    //   value: 3,
-    //   label: "间隔任务"
-    // },
-    // {
-    //   value: 4,
-    //   label: "rss订阅"
-    // },
-    {
-      value: 5,
-      label: "脚本任务"
-    }
-  ];
 
   const formRef = ref();
   const dataList = ref([]);
@@ -68,6 +51,22 @@ export function useRole(tableRef: Ref) {
     pageSizes: [5, 10, 20, 50, 100],
     background: true
   });
+
+  // 子组件 prop 为 primitive 类型的 demo
+  const formPrimitiveParam = ref("");
+  const resetFormPrimitiveParam = ref(formPrimitiveParam.value);
+
+  
+  const buttonClass = computed(() => {
+    return [
+      "!h-[20px]",
+      "reset-margin",
+      "!text-gray-500",
+      "dark:!text-white",
+      "dark:hover:!text-primary"
+    ];
+  });
+
   const indexMethod = (index: number) => {
     return (form.currentPage - 1) * form.pageSize + index + 1;
   };
@@ -75,6 +74,86 @@ export function useRole(tableRef: Ref) {
     ExportExcel(dataList, columns);
   };
 
+  const manyHandleRun = () => {
+    const curSelected = tableRef.value.getTableRef().getSelectionRows();
+    RunTaskApi(getKeyList(curSelected, "id")).then(async res => {
+      if (res.code === 200) {
+        message(`正在批量运行任务`, {
+          type: "success"
+        });
+      } else {
+        message(`操作失败，${res.message}`, { type: "error" });
+      }
+      tableRef.value.getTableRef().clearSelection();
+    });
+  };
+
+  const manyHandleStop = () => {
+    const curSelected = tableRef.value.getTableRef().getSelectionRows();
+    StopTaskApi(getKeyList(curSelected, "id")).then(async res => {
+      if (res.code === 200) {
+        message(`已批量停止任务`, {
+          type: "success"
+        });
+      } else {
+        message(`操作失败，${res.message}`, { type: "error" });
+      }
+      tableRef.value.getTableRef().clearSelection();
+    });
+  };
+
+  const handleRun = id => {
+    RunTaskApi([id]).then(async res => {
+      if (res.code === 200) {
+        message(res.message, { type: "success" });
+        onSearch();
+      } else {
+        message(`操作失败，${res.message}`, { type: "error" });
+      }
+    });
+  };
+
+  const handleStop = id => {
+    StopTaskApi([id]).then(async res => {
+      if (res.code === 200) {
+        console.log(res);
+      } else {
+        message(`操作失败，${res.message}`, { type: "error" });
+      }
+    });
+  };
+
+  
+  const handleLog = id => {
+    
+    GetTaskLog(id).then(async res => {
+    if (res.code !== 200) {
+        message(`操作失败，${res.message}`, { type: "error" });
+      } else {
+      const data = res.data;
+          const text1 = `## 开始执行... ${ dayjs(data?.last_execution_time * 1000).format("YYYY-MM-DD HH:mm:ss")}`;
+          const text2 = `${data.content}`;
+          const text3 = `## 执行结束... ${dayjs((data?.last_execution_time + data?.last_run_time) * 1000).format("YYYY-MM-DD HH:mm:ss")}  耗时：${data?.last_run_time}秒`;
+          addDialog({
+            title: "日志详情",
+            width: "46%",
+            draggable: true,
+            fullscreenIcon: true,
+            fullscreen: isMobile.value ? true : false,
+            contentRenderer: () =>
+              h(formPrimitive, {
+                data: `${text1}\n\n${text2}\n${text3}`,
+                "onUpdate:data": val => (formPrimitiveParam.value = val)
+              }),
+            closeCallBack: () => {
+              // 重置表单数据
+              formPrimitiveParam.value = resetFormPrimitiveParam.value;
+              onSearch()
+            }
+          });
+        }
+    });
+  };
   const columns: TableColumnList = [
     {
       label: "列表", // 如果需要表格多选，此处label必须设置
@@ -84,44 +163,19 @@ export function useRole(tableRef: Ref) {
       label: "序号",
       type: "index",
       index: indexMethod,
-      minWidth: 50
-    },
-    {
-      label: "任务类型",
-      hide: true,
-      prop: "id_code"
-    },
-    // {
-    //   label: "data",
-    //   hide: true,
-    //   prop: "data"
-    // },
-    {
-      label: "任务ID",
-      prop: "task_code",
-      sortable: true,
-      minWidth: 100
+      minWidth: 50,
+      sortable: true
     },
     {
       label: "任务名称",
       prop: "name",
-      minWidth: 100
+      minWidth: 100,
+      sortable: true
     },
-    // {
-    //   label: "执行间隔",
-    //   prop: "interval",
-    //   minWidth: 80,
-    //   cellRenderer: ({ row }) => {
-    //     if (row.id_code == 3 || row.id_code == 4) {
-    //       return row.interval;
-    //     }
-    //     return "-*-";
-    //   }
-    // },
     {
       label: "任务文件",
       prop: "work_file",
-      minWidth: 180,
+      minWidth: 120,
       cellRenderer: ({ row }) => {
         const handleButtonClick = () => {
           openDialog("查看", row);
@@ -129,7 +183,7 @@ export function useRole(tableRef: Ref) {
 
         const renderIcon = () => (
           <el-button type={"primary"} onClick={handleButtonClick} link>
-            {row?.data?.taskCommand}
+            {row?.work_file}
           </el-button>
         );
 
@@ -137,18 +191,18 @@ export function useRole(tableRef: Ref) {
       }
     },
     {
-      label: "corn表达式",
-      minWidth: 180,
-      prop: "corn",
-      cellRenderer: ({ row }) => {
-        if (row.id_code == 5) {
-          return row?.data?.cronExpression;
-        }
-        if (row.id_code == 3 || row.id_code == 4 || row.id_code == 5) {
-          return dayjs(row.next_timestamp * 1000).format("YYYY-MM-DD HH:mm:ss");
-        }
-        return "-*-";
-      }
+      label: "运行状态",
+      prop: "status",
+      minWidth: 80,
+      sortable: true,
+      cellRenderer: ({ row, props }) => (
+        <el-tag
+          size={props.size}
+          type={row.status === 0 ? "danger" : "success"}
+        >
+          {row.status === 0 ? "空闲中" : "运行中"}
+        </el-tag>
+      )
     },
     {
       label: "状态",
@@ -169,11 +223,37 @@ export function useRole(tableRef: Ref) {
         />
       )
     },
-
+    {
+      label: "corn表达式",
+      minWidth: 100,
+      prop: "schedule"
+    },
+    {
+      label: "运行时长",
+      minWidth: 80,
+      sortable: true,
+      prop: "last_run_time"
+    },
+    {
+      label: "最后运行时间",
+      minWidth: 120,
+      sortable: true,
+      prop: "last_execution_time",
+      formatter: ({ last_execution_time }) =>
+        dayjs(last_execution_time * 1000).format("YYYY-MM-DD HH:mm:ss")
+    },
+    {
+      label: "下次运行时间",
+      minWidth: 120,
+      sortable: true,
+      prop: "corn",
+      formatter: ({ schedule }) =>
+        dayjs(parser_cron(schedule)[0]).format("YYYY-MM-DD HH:mm:ss")
+    },
     {
       label: "操作",
       fixed: "right",
-      width: 110,
+      width: 150,
       slot: "operation"
     }
   ];
@@ -202,7 +282,7 @@ export function useRole(tableRef: Ref) {
             loading: true
           }
         );
-        UpdateTask_status(row.id_code, row.task_code).then(res => {
+        UpdateTask_status(row.id).then(res => {
           if (res.code === 200) {
             setTimeout(() => {
               switchLoadMap.value[index] = Object.assign(
@@ -227,9 +307,9 @@ export function useRole(tableRef: Ref) {
   }
 
   function handleDelete(row) {
-    deleteTaskApi(row.id_code, row.task_code).then(async res => {
+    deleteTaskApi(row.id).then(async res => {
       if (res.code === 200) {
-        message(`您删除了任务编号为${row.id_code}的这条数据`, {
+        message(`您删除了任务编号为${row.id}的这条数据`, {
           type: "success"
         });
         await onSearch();
@@ -258,17 +338,11 @@ export function useRole(tableRef: Ref) {
     // 返回当前选中的行
     const curSelected = tableRef.value.getTableRef().getSelectionRows();
     // 接下来根据实际业务，通过选中行的某项数据，比如下面的id，调用接口进行批量删除
-    manyDeleteTaskApi(
-      getKeyList(curSelected, "id_code")[0],
-      getKeyList(curSelected, "task_code")
-    ).then(async res => {
+    manyDeleteTaskApi(getKeyList(curSelected, "id")).then(async res => {
       if (res.code === 200) {
-        message(
-          `已删除任务编号为 ${getKeyList(curSelected, "task_code")} 的数据`,
-          {
-            type: "success"
-          }
-        );
+        message(`已删除任务ID为 ${getKeyList(curSelected, "id")} 的数据`, {
+          type: "success"
+        });
         await onSearch();
       } else {
         message(`操作失败，${res.message}`, { type: "error" });
@@ -323,7 +397,7 @@ export function useRole(tableRef: Ref) {
   function openDialog(title = "新增", row?: FormItemProps) {
     const content_data = ref();
     if (title == "查看") {
-      getScript(row?.data?.taskCommand).then(async res => {
+      getScript(row?.work_file).then(async res => {
         if (res.code !== 200) {
           message(`操作失败，${res.message}`, { type: "error" });
           return "";
@@ -352,14 +426,10 @@ export function useRole(tableRef: Ref) {
       props: {
         formInline: {
           title,
-          id_code: row?.id_code ?? 5,
-          task_code: row?.task_code ?? undefined,
           name: row?.name ?? "",
-          interval: row?.interval ?? "",
-          enable: row?.enable ?? false,
-          cronExpression: row?.data?.cronExpression ?? "",
-          taskCommand: row?.data?.taskCommand ?? "",
-          data: row?.data ?? []
+          work_file: row?.work_file ?? "",
+          enable: row?.enable ?? true,
+          schedule: row?.schedule ?? ""
         }
       },
       width: "46%",
@@ -380,25 +450,23 @@ export function useRole(tableRef: Ref) {
         }
         FormRef.validate(valid => {
           if (valid) {
-            if (curData.id_code == 1 || curData.id_code == 2) {
-              curData.interval = dayjs(curData.interval).format(
-                "YYYY年M月D日H时m分s秒"
-              );
+            if (title === "新增") {
+              createTaskApi(curData).then(async res => {
+                if (res.code === 200) {
+                  await chores();
+                } else {
+                  message(`操作失败，${res.message}`, { type: "error" });
+                }
+              });
+            } else if (title === "编辑") {
+              UpdateTask(row.id, curData).then(async res => {
+                if (res.code === 200) {
+                  await chores();
+                } else {
+                  message(`操作失败，${res.message}`, { type: "error" });
+                }
+              });
             }
-            if (curData.id_code == 5) {
-              curData.data = {
-                taskCommand: curData.taskCommand,
-                cronExpression: curData.cronExpression
-              };
-            }
-
-            createTaskApi(curData).then(async res => {
-              if (res.code === 200) {
-                await chores();
-              } else {
-                message(`操作失败，${res.message}`, { type: "error" });
-              }
-            });
           }
         });
       }
@@ -417,10 +485,15 @@ export function useRole(tableRef: Ref) {
     dataList,
     selectedNum,
     pagination,
-    taskTypeOptions,
     fileOptions,
+    buttonClass,
     onbatchDel,
     getScript,
+    manyHandleRun,
+    handleLog,
+    manyHandleStop,
+    handleRun,
+    handleStop,
     onSearch,
     resetForm,
     openDialog,
