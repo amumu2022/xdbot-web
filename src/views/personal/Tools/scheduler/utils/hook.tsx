@@ -1,7 +1,16 @@
+/*
+ * @Author: xdteam
+ * @Date: 2024-05-05 22:54:11
+ * @LastEditTime: 2024-08-09 23:16:16
+ * @LastEditors: YourName
+ * @Description:
+ * @FilePath: \vue-pure-admin\src\views\personal\Tools\scheduler\utils\hook.tsx
+ * 版权声明
+ */
 import dayjs from "dayjs";
 import editForm from "../form.vue";
 import CodeForm from "../fileDetial.vue";
-import formPrimitive from "../formPrimitive.vue";
+import log from "../log.vue";
 
 import { message } from "@/utils/message";
 import {
@@ -10,7 +19,6 @@ import {
   createTaskApi,
   deleteTaskApi,
   manyDeleteTaskApi,
-  GetTaskLog,
   RunTaskApi,
   StopTaskApi,
   UpdateTask
@@ -56,7 +64,6 @@ export function useRole(tableRef: Ref) {
   const formPrimitiveParam = ref("");
   const resetFormPrimitiveParam = ref(formPrimitiveParam.value);
 
-  
   const buttonClass = computed(() => {
     return [
       "!h-[20px]",
@@ -116,44 +123,34 @@ export function useRole(tableRef: Ref) {
   const handleStop = id => {
     StopTaskApi([id]).then(async res => {
       if (res.code === 200) {
-        console.log(res);
+        message(res.message, { type: "success" });
+        onSearch();
       } else {
         message(`操作失败，${res.message}`, { type: "error" });
       }
     });
   };
 
-  
   const handleLog = id => {
-    
-    GetTaskLog(id).then(async res => {
-    if (res.code !== 200) {
-        message(`操作失败，${res.message}`, { type: "error" });
-      } else {
-      const data = res.data;
-          const text1 = `## 开始执行... ${ dayjs(data?.last_execution_time * 1000).format("YYYY-MM-DD HH:mm:ss")}`;
-          const text2 = `${data.content}`;
-          const text3 = `## 执行结束... ${dayjs((data?.last_execution_time + data?.last_run_time) * 1000).format("YYYY-MM-DD HH:mm:ss")}  耗时：${data?.last_run_time}秒`;
-          addDialog({
-            title: "日志详情",
-            width: "46%",
-            draggable: true,
-            fullscreenIcon: true,
-            fullscreen: isMobile.value ? true : false,
-            contentRenderer: () =>
-              h(formPrimitive, {
-                data: `${text1}\n\n${text2}\n${text3}`,
-                "onUpdate:data": val => (formPrimitiveParam.value = val)
-              }),
-            closeCallBack: () => {
-              // 重置表单数据
-              formPrimitiveParam.value = resetFormPrimitiveParam.value;
-              onSearch()
-            }
-          });
-        }
+    addDialog({
+      title: "日志详情",
+      width: "46%",
+      draggable: true,
+      fullscreenIcon: true,
+      fullscreen: isMobile.value ? true : false,
+      contentRenderer: () =>
+        h(log, {
+          id, // 传递id作为prop
+          "onUpdate:data": val => (formPrimitiveParam.value = val)
+        }),
+      closeCallBack: () => {
+        // 重置表单数据
+        formPrimitiveParam.value = resetFormPrimitiveParam.value;
+        onSearch();
+      }
     });
   };
+
   const columns: TableColumnList = [
     {
       label: "列表", // 如果需要表格多选，此处label必须设置
