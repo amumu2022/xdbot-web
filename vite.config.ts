@@ -1,3 +1,12 @@
+/*
+ * @Author: xdteam
+ * @Date: 2024-05-05 22:54:12
+ * @LastEditTime: 2024-09-09 21:11:45
+ * @LastEditors: YourName
+ * @Description:
+ * @FilePath: \vue-pure-admin\vite.config.ts
+ * 版权声明
+ */
 import dayjs from "dayjs";
 import { resolve } from "path";
 import pkg from "./package.json";
@@ -46,12 +55,12 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       proxy: {
         // api代理
         "/api": {
-          target: "http://127.0.0.1:31400",
+          target: "http://127.0.0.1:31400/",
           changeOrigin: true
         },
         // 外库文件代理
         "/static/upload": {
-          target: "http://127.0.0.1:31400",
+          target: "http://127.0.0.1:31400/",
           changeOrigin: true
         }
       }

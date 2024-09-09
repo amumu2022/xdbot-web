@@ -72,14 +72,13 @@ async function getGlobal(bot_id: string) {
     const res = await getQuanjuInfo(bot_id);
 
     if (res.code === 200) {
+      formRef.value.resetFields(); // 直接使用 formRef
       const reqData = res.data;
-      // 检查并初始化可能缺失的属性
-      const middleData = newFormInline.value;
+      const middleData = props.formInline;
       reqData.group = reqData.group || middleData.group;
       reqData.sendmsg = reqData.sendmsg || middleData.sendmsg;
       reqData.other = reqData.other || middleData.other;
       reqData.dynamic = reqData.dynamic || middleData.dynamic;
-
       newFormInline.value = { ...reqData };
 
       newFormInline.value.group.bot_id = bot_id;
