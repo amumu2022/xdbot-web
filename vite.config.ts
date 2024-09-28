@@ -1,7 +1,7 @@
 /*
  * @Author: xdteam
  * @Date: 2024-05-05 22:54:12
- * @LastEditTime: 2024-09-09 21:11:45
+ * @LastEditTime: 2024-09-26 21:52:58
  * @LastEditors: YourName
  * @Description:
  * @FilePath: \vue-pure-admin\vite.config.ts
@@ -59,7 +59,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
           changeOrigin: true
         },
         // 外库文件代理
-        "/static/upload": {
+        "/static": {
           target: "http://127.0.0.1:31400/",
           changeOrigin: true
         }

@@ -201,7 +201,8 @@ export function useRole(tableRef: Ref) {
       },
       beforeCancel: done => {
         done(); // 关闭弹框
-        message(`上传图片后请刷新列表`, { type: "warning" });
+        onSearch();
+        message(`上传成功`, { type: "success" });
       }
     });
   }

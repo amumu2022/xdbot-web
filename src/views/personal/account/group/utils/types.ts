@@ -42,9 +42,9 @@ export interface Other {
   friend_ref_msg?: string;
   friend_msg?: string;
 
-  invate_req?: number;
-  invate_ref_msg?: string;
-  invate_msg?: string;
+  invite_req?: number;
+  invite_ref_msg?: string;
+  invite_msg?: string;
 }
 /**
  * 全局-动态推送设置

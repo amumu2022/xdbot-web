@@ -1,7 +1,7 @@
 /*
  * @Author: xdteam
  * @Date: 2024-05-05 22:54:11
- * @LastEditTime: 2024-08-09 23:16:16
+ * @LastEditTime: 2024-09-27 21:31:27
  * @LastEditors: YourName
  * @Description:
  * @FilePath: \vue-pure-admin\src\views\personal\Tools\scheduler\utils\hook.tsx
@@ -11,7 +11,6 @@ import dayjs from "dayjs";
 import editForm from "../form.vue";
 import CodeForm from "../fileDetial.vue";
 import log from "../log.vue";
-
 import { message } from "@/utils/message";
 import {
   getTaskData,

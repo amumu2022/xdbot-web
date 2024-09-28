@@ -24,9 +24,9 @@ const props = withDefaults(defineProps<FormProps>(), {
       friend_req: 1,
       friend_ref_msg: "",
       friend_msg: "你好啊！我是小木同学，很高兴认识你",
-      invate_req: 1,
-      invate_ref_msg: "",
-      invate_msg: "大家好！我是小木同学，很高兴认识大家"
+      invite_req: 1,
+      invite_ref_msg: "",
+      invite_msg: "大家好！我是小木同学，很高兴认识大家"
     },
     dynamic: {
       be_ban: false,
@@ -374,8 +374,8 @@ watch(adjutantOptions, newValue => {
         </el-form-item>
         <el-row>
           <el-col :md="12" :sm="12" :xs="24">
-            <el-form-item label="邀群请求" prop="invate_req">
-              <el-select v-model="newFormInline.other.invate_req" clearable>
+            <el-form-item label="邀群请求" prop="invite_req">
+              <el-select v-model="newFormInline.other.invite_req" clearable>
                 <el-option
                   v-for="(item, index) in switchOptions"
                   :key="index"
@@ -386,9 +386,9 @@ watch(adjutantOptions, newValue => {
             </el-form-item>
           </el-col>
           <el-col :md="12" :sm="12" :xs="24">
-            <el-form-item label="拒绝理由" prop="invate_ref_msg">
+            <el-form-item label="拒绝理由" prop="invite_ref_msg">
               <el-input
-                v-model="newFormInline.other.invate_ref_msg"
+                v-model="newFormInline.other.invite_ref_msg"
                 type="text"
                 placeholder="请输入拒绝理由"
                 clearable
@@ -396,9 +396,9 @@ watch(adjutantOptions, newValue => {
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="发送信息" prop="invate_msg">
+        <el-form-item label="发送信息" prop="invite_msg">
           <el-input
-            v-model="newFormInline.other.invate_msg"
+            v-model="newFormInline.other.invite_msg"
             type="text"
             clearable
           />
