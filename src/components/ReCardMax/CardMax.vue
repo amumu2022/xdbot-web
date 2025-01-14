@@ -96,7 +96,7 @@ const score_value = props.product.score;
             effect="dark"
             class="mx-1 list-card-item_detail--operation--tag"
           >
-            {{ product.enable ? "已启用" : "已停用" }}
+            {{ product.enable ? "已启用" : "已停用" }}``
           </el-tag>
         </div>
         <el-dropdown trigger="click">

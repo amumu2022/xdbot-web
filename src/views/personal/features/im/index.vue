@@ -8,18 +8,19 @@ import { useCopyToClipboard } from "@pureadmin/utils";
 import { message } from "@/utils/message";
 import { addDialog, closeDialog } from "@/components/ReDialog";
 import { storageLocal } from "@pureadmin/utils";
+import { useOnebot11 } from "@/utils/onebot11";
+
 import {
   inputText,
   recordContent,
   SaveData,
   sendMsg,
-  getSrc,
-  srcList,
   ws_status
 } from "./utils/hooks";
 import MdEditor from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 
+const { getSrc, srcList } = useOnebot11();
 const { clipboardValue, copied } = useCopyToClipboard();
 
 defineOptions({

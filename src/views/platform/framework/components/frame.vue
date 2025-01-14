@@ -5,10 +5,31 @@ import { useBasicLayout } from "@/hooks/useBasicLayout";
 import { h } from "vue";
 import ExchangeCard from "./FrameChildren/ExchangeCard.vue";
 import Sign from "./FrameChildren/Sign.vue";
+import frameSet from "./FrameChildren/FrameSet.vue";
 import Text2Pic from "./FrameChildren/TextToPic.vue";
 import Empty from "./FrameChildren/Empty.vue";
+
+defineOptions({
+  name: "PlatFormFrame"
+});
+
+interface Product {
+  index: number;
+  isSetup: boolean;
+  type: number;
+  name: string;
+  description: string;
+}
+
 const { isMobile } = useBasicLayout();
-const productList = [
+const productList: Product[] = [
+  {
+    index: 4,
+    isSetup: true,
+    type: 4,
+    name: "框架设置",
+    description: "如何连接到你的xdBot"
+  },
   {
     index: 1,
     isSetup: true,
@@ -31,16 +52,16 @@ const productList = [
     description: "在这里你可以对卡片兑换进行一些设置"
   },
   {
-    index: 4,
-    isSetup: true,
-    type: 4,
-    name: "存储设置",
-    description: "网站上传的文件储存到哪呢？"
+    index: 5,
+    isSetup: false,
+    type: 3,
+    name: "更多",
+    description: "在这里你可以对卡片兑换进行一些设置"
   }
 ];
 
-const handleManageProduct = product => {
-  let component = Empty;
+const handleManageProduct = (product: Product) => {
+  let component: any = Empty;
   if (product.index == 1) {
     component = Sign;
   } else if (product.index == 2) {
@@ -48,12 +69,14 @@ const handleManageProduct = product => {
   } else if (product.index == 3) {
     component = ExchangeCard;
   } else if (product.index == 4) {
-    component = ExchangeCard;
+    component = frameSet;
+  } else if (product.index == 5) {
+    component = Sign;
   }
   openDialog(product.name, component);
 };
 
-function openDialog(name: string, component) {
+function openDialog(name: string, component: any) {
   addDialog({
     title: `${name}`,
     width: "46%",

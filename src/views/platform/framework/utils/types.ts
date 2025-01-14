@@ -7,6 +7,7 @@ interface FormItemProps {
   sign?: Sign;
   card?: Card;
   text2pic?: Text2Pic;
+  frame?: Frame;
 }
 
 /**
@@ -77,6 +78,14 @@ interface Card {
   prohibition?: number; //禁言卡
   title?: number; //头衔卡
   upgrade?: number; //升管卡}
+}
+
+/**
+ * 框架设置
+ */
+
+interface Frame {
+  ws_url: string; //ws连接
 }
 
 /**

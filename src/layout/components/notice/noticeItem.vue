@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ListItem } from "./data";
-import { ref, PropType } from "vue";
-import { useNav } from "@/layout/hooks/useNav";
+import { PropType } from "vue";
 import { message } from "@/utils/message";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import Copy from "@iconify-icons/ep/copy-document";
@@ -13,9 +12,6 @@ const props = defineProps({
 });
 import { useCopyToClipboard } from "@pureadmin/utils";
 const { clipboardValue, copied } = useCopyToClipboard();
-const messageRef = ref(null);
-const messageTooltip = ref(false);
-const { tooltipEffect } = useNav();
 
 // 复制链接
 const copyLinks = text => {
@@ -26,25 +22,6 @@ const copyLinks = text => {
     message(`消息内容复制失败`, { type: "error" });
   }
 };
-
-function hoverDescription(event, message) {
-  // currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除
-  const tempTag = document.createElement("span");
-  tempTag.innerText = message;
-  tempTag.className = "getDescriptionWidth";
-  document.querySelector("body").appendChild(tempTag);
-  const currentWidth = (
-    document.querySelector(".getDescriptionWidth") as HTMLSpanElement
-  ).offsetWidth;
-  document.querySelector(".getDescriptionWidth").remove();
-
-  // cellWidth为容器的宽度
-  const cellWidth = event.target.offsetWidth;
-  // 当文本宽度大于容器宽度两倍时，代表文本显示超过4行
-  currentWidth > 2 * cellWidth
-    ? (messageTooltip.value = true)
-    : (messageTooltip.value = false);
-}
 </script>
 
 <template>
@@ -82,30 +59,14 @@ function hoverDescription(event, message) {
       <div class="notice-title-content">
         {{ props.noticeItem.title2 }}
       </div>
-      <el-tooltip
-        popper-class="notice-title-popper"
-        :effect="tooltipEffect"
-        :disabled="!messageTooltip"
-        :content="props.noticeItem.message"
-        placement="top-start"
-      >
-        <div
-          ref="messageRef"
-          class="notice-text-message"
-          @mouseover="hoverDescription($event, props.noticeItem.message)"
-        >
-          {{ props.noticeItem.message }}
-        </div>
-      </el-tooltip>
+      <div class="notice-text-message">
+        {{ props.noticeItem.message }}
+      </div>
     </div>
   </div>
 </template>
 
-<style>
-.notice-title-popper {
-  max-width: 238px;
-}
-</style>
+<style></style>
 <style scoped lang="scss">
 .notice-container {
   display: flex;
@@ -161,7 +122,6 @@ function hoverDescription(event, message) {
     .notice-text-message {
       display: -webkit-box;
       overflow: hidden;
-      text-overflow: ellipsis;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       word-break: break-all;

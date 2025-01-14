@@ -3,36 +3,97 @@ import { ref, onMounted } from "vue";
 import { noticesData } from "./data";
 import NoticeList from "./noticeList.vue";
 import Bell from "@iconify-icons/ep/bell";
-import { connectWs, ws_status } from "@/views/personal/features/im/utils/hooks";
-const notices = ref(noticesData);
-const activeKey = ref(noticesData[0].key);
+import { useWebSocket } from "@/utils/websocket";
+import { useOnebot11 } from "@/utils/onebot11";
+import { getWsLogList } from "@/api/system/monitor";
+
+import { message } from "@/utils/message";
 import { useRouter } from "vue-router";
 import { storageLocal } from "@pureadmin/utils";
 import { ElMessage, ElMessageBox } from "element-plus";
-const router = useRouter();
 
+const { connectWs } = useWebSocket();
+const { pushLog } = useOnebot11();
+const notices = ref(noticesData);
+const activeKey = ref(noticesData[0].key);
+
+const ws_status = ref(false);
 interface StorageConfigs {
   ws_url: string;
 }
 
+/**
+ * 增强的WebSocket连接函数
+ * @param {string} ws_url - WebSocket服务器地址
+ * @param {Function} [onMessage] - 消息接收回调函数（可选）
+ * @param {Function} [onOpen] - 连接成功回调函数（可选）
+ * @param {Function} [onClose] - 连接关闭回调函数（可选）
+ * @returns {Promise<void>}
+ */
+const connectWsEnhanced = async (
+  ws_url: string,
+  onMessage?: Function,
+  onOpen?: Function,
+  onClose?: Function
+) => {
+  const defaultCallback = () => {};
+
+  await connectWs(
+    ws_url,
+    onMessage || defaultCallback,
+    async socket => {
+      // 连接打开时的操作
+      onOpen(socket);
+    },
+    onClose || defaultCallback
+  );
+};
+
+function onMessage(msg_event: { data: string }) {
+  const json_data = JSON.parse(msg_event.data);
+  pushLog(json_data.params);
+}
+
+async function onOpen(_socket) {
+  // 连接打开时的操作
+  ws_status.value = true;
+  message("连接建立成功啦", { type: "success" });
+  try {
+    const response = await getWsLogList();
+    const { data } = response;
+    data.forEach(logEntry => pushLog(logEntry));
+  } catch (error) {
+    console.error("获取日志列表时发生错误:", error);
+  }
+}
+
+function onClose() {
+  // 连接关闭时的操作
+  ws_status.value = false;
+  message("连接已断开", { type: "error" });
+}
+
 //初始化ws连接
 function get() {
-  const ws_url = storageLocal().getItem<StorageConfigs>("SimulateSet")?.ws_url;
+  const router = useRouter();
+
+  const ws_url = storageLocal().getItem<StorageConfigs>("FrameSet")?.ws_url;
+
   if (ws_url) {
     if (!ws_status.value) {
-      connectWs(ws_url);
+      connectWsEnhanced(ws_url, onMessage, onOpen, onClose);
     }
-  } else
+  } else {
     ElMessageBox.confirm("ws地址尚未配置，是否跳转配置", "Warning", {
       confirmButtonText: "前往",
       cancelButtonText: "取消",
       type: "warning"
     })
       .then(() => {
-        router.push({ name: "FeaturesIM" });
+        router.push({ name: "PlatFormFrame" });
         ElMessage({
           type: "info",
-          message: "请点击设置按钮进行设置"
+          message: "请点击框架设置按钮进行设置"
         });
       })
       .catch(() => {
@@ -41,6 +102,7 @@ function get() {
           message: "配置ws后才能输出日志哦~"
         });
       });
+  }
 }
 
 onMounted(() => {

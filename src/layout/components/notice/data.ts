@@ -1,8 +1,6 @@
-import {
-  SendData,
-  NoticeData,
-  RecvData
-} from "@/views/personal/features/im/utils/hooks";
+import { useOnebot11 } from "@/utils/onebot11";
+const { RecvData, SendData, NoticeData } = useOnebot11();
+
 export interface ListItem {
   title: string;
   bot_id: string;

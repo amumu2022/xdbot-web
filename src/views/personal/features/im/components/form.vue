@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { connectWs, CloseWs } from "../utils/hooks";
+import { connectWsEnhanced, CloseWsFunc } from "../utils/hooks";
 const sexOptions = [
   { label: "男生", value: "male" },
   { label: "女生", value: "female" },
@@ -38,12 +38,12 @@ export interface FormProps {
 
 // 连接ws
 function ws_init() {
-  connectWs(newFormInline.value.ws_url);
+  connectWsEnhanced(newFormInline.value.ws_url);
 }
 
 // 断开ws
 function ws_close() {
-  CloseWs();
+  CloseWsFunc(newFormInline.value.ws_url);
 }
 
 const props = withDefaults(defineProps<FormProps>(), {
