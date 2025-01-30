@@ -24,6 +24,11 @@ export const getServerInfoApi = () => {
   return http.request<ServerInfo>("get", "/api/v1/monitor/serverInfo");
 };
 
+/** 获取机器人数据信息 */
+export const getBotInfoApi = () => {
+  return http.request<ResultDetail>("get", "/api/v1/bot/info");
+};
+
 /** 获取wsLog日志列表 */
 export const getWsLogList = () => {
   return http.request<ResultDetail>("get", "/api/v1/ws/log/list");

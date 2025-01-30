@@ -96,14 +96,14 @@
 
 <script setup lang="ts">
 import { getServerInfoApi, ServerInfo } from "@/api/system/monitor";
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref, onUnmounted } from "vue";
 
-/** 组件name最好和菜单表中的router_name一致 **/
 defineOptions({
   name: "ServersMonitor"
 });
 
 const loading = ref(true);
+const timerId = ref(null);
 
 const cpuInfoTable = ref([]);
 const memoryInfoTable = ref([]);
@@ -215,6 +215,13 @@ function cellClassName({ row }) {
 
 onBeforeMount(() => {
   getList();
+  timerId.value = setInterval(getList, 20000); // 每 10 秒定时刷新
+});
+
+onUnmounted(() => {
+  if (timerId.value !== null) {
+    clearInterval(timerId.value); // 组件卸载时清除定时器
+  }
 });
 </script>
 

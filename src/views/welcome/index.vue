@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
-import { openLink } from "@pureadmin/utils";
-import { getAdvertData } from "@/api/system/advert";
 import TypeIt from "@/components/ReTypeit";
-import { ref, computed, markRaw, onMounted } from "vue";
+import { ref, computed, markRaw, onMounted} from "vue";
 import Github from "./components/Github.vue";
+import Dashboard from "./components/dashboard.vue";
+import BotInfo from "./components/BotOnline.vue";
 import { randomColor } from "@pureadmin/utils";
 import { useRenderFlicker } from "@/components/ReFlicker";
 import { getVersionData } from "@/api/system/version";
 import MdEditor from "md-editor-v3";
-import { isExpired } from "@/utils/xdteam";
 
 defineOptions({
   name: "Welcome"
@@ -17,7 +16,6 @@ defineOptions({
 
 const latestNewsData = ref([]);
 const loading = ref<boolean>(true);
-const pic_list = ref([]);
 const { version } = __APP_INFO__.pkg;
 const titleClass = computed(() => {
   return ["text-base", "font-medium"];
@@ -50,23 +48,8 @@ function RenderingLog() {
   });
 }
 
-function RenderingSwip() {
-  const post_data = { custom: "", alt: "", src: "" };
-
-  getAdvertData(post_data).then(({ data }) => {
-    const updatedPicList = [];
-    data.results.forEach(item => {
-      if (!isExpired(item.end_time)) {
-        updatedPicList.push(item);
-      }
-    });
-    pic_list.value = updatedPicList;
-  });
-}
-
 onMounted(() => {
   RenderingLog();
-  RenderingSwip();
 });
 </script>
 
@@ -76,9 +59,9 @@ onMounted(() => {
       <el-col
         :xs="24"
         :sm="24"
-        :md="24"
-        :lg="24"
-        :xl="24"
+        :md="12"
+        :lg="12"
+        :xl="12"
         class="mb-[18px]"
         v-motion
         :initial="{
@@ -100,25 +83,56 @@ onMounted(() => {
               href="https://www.cnblogs.com/xdteam/"
               target="_black"
             >
-              <TypeIt :values="[`每日一赏`]" :cursor="false" :speed="60" />
+              <TypeIt
+                :className="'type-it4'"
+                :values="[`bot信息`]"
+                :cursor="false"
+                :speed="60"
+              />
             </a>
           </template>
 
-          <el-skeleton animated :rows="7" :loading="loading">
-            <el-carousel :interval="4000" type="card">
-              <el-carousel-item
-                v-for="item in pic_list"
-                :key="item"
-                style="display: flex; align-items: center"
-              >
-                <el-image
-                  :src="item.src"
-                  fit="contain"
-                  @click="openLink(item.alt)"
-                />
-              </el-carousel-item>
-            </el-carousel>
-          </el-skeleton>
+          <BotInfo />
+        </el-card>
+      </el-col>
+
+      <el-col
+        :xs="24"
+        :sm="24"
+        :md="12"
+        :lg="12"
+        :xl="12"
+        class="mb-[18px]"
+        v-motion
+        :initial="{
+          opacity: 0,
+          y: 100
+        }"
+        :enter="{
+          opacity: 1,
+          y: 0,
+          transition: {
+            delay: 200
+          }
+        }"
+      >
+        <el-card shadow="hover">
+          <template #header>
+            <a
+              :class="titleClass"
+              href="https://www.cnblogs.com/xdteam/"
+              target="_black"
+            >
+              <TypeIt
+                :className="'type-it3'"
+                :values="[`状态面板`]"
+                :cursor="false"
+                :speed="60"
+              />
+            </a>
+          </template>
+
+          <Dashboard />
         </el-card>
       </el-col>
 
