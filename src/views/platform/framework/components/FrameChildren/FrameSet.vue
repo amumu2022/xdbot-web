@@ -4,6 +4,8 @@ import { getDockData, UpdateDock } from "@/api/system/dock";
 import { message } from "@/utils/message";
 import { FormProps } from "../../utils/types";
 import { storageLocal } from "@pureadmin/utils";
+// import { connectWsEnhanced } from "@/src/layout/components/notice/data";
+import { connectWsEnhanced, onClose } from "@/layout/components/notice/data";
 
 const props = withDefaults(defineProps<FormProps>(), {
   formInline: () => ({
@@ -34,16 +36,14 @@ async function saveFrame() {
   }
 }
 
-async function Connect() {
-  const post_data = { name: "frame", data: newFormInline.value.frame };
-  const data = await UpdateDock("frame", post_data);
-  if (data.success) {
-    message(data.message, { type: "success" });
-    set();
-    reloadSign();
-  } else {
-    message(`操作失败，${data.message}`, { type: "warning" });
-  }
+// 连接ws
+function Connect() {
+  connectWsEnhanced(newFormInline.value.frame.ws_url);
+}
+
+// 断开ws
+function ws_close() {
+  onClose(newFormInline.value.frame.ws_url);
 }
 
 async function reloadSign() {
@@ -75,6 +75,7 @@ onBeforeMount(() => {
     <el-form-item>
       <el-button type="primary" @click="saveFrame">保存</el-button>
       <el-button type="success" @click="Connect">连接</el-button>
+      <el-button type="danger" @click="ws_close">断开</el-button>
     </el-form-item>
   </el-form>
 </template>

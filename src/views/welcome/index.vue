@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
 import TypeIt from "@/components/ReTypeit";
-import { ref, computed, markRaw, onMounted} from "vue";
+import { onMounted, ref, computed, markRaw } from "vue";
 import Github from "./components/Github.vue";
 import Dashboard from "./components/dashboard.vue";
 import BotInfo from "./components/BotOnline.vue";
@@ -85,14 +85,15 @@ onMounted(() => {
             >
               <TypeIt
                 :className="'type-it4'"
-                :values="[`bot信息`]"
+                :values="[`bot连接信息`]"
                 :cursor="false"
                 :speed="60"
               />
             </a>
           </template>
-
-          <BotInfo />
+          <el-scrollbar max-height="280">
+            <BotInfo />
+          </el-scrollbar>
         </el-card>
       </el-col>
 

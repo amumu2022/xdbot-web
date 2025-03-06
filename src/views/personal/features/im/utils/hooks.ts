@@ -45,7 +45,8 @@ const { connectWs, WebSocketClient, CloseWs } = useWebSocket();
 const { pushLog, ProcessMessages, makeGroupMessage, makePrivateMessage } =
   useOnebot11();
 
-function onClose() {
+function onClose(ws_url: string) {
+  CloseWs(ws_url);
   ws_status.value = false;
   message("连接已断开", { type: "error" });
 }
@@ -76,6 +77,10 @@ export function CloseWsFunc(ws_url: string) {
  * @returns {Promise<void>}
  */
 export const connectWsEnhanced = async (ws_url: string) => {
+  if (ws_status.value) {
+    message("不能重复建立连接", { type: "warning" });
+  }
+
   await connectWs(
     ws_url,
     onMessage,
@@ -83,7 +88,7 @@ export const connectWsEnhanced = async (ws_url: string) => {
       // 连接打开时的操作
       onOpen(socket);
     },
-    onClose
+    () => onClose(ws_url)
   );
 };
 

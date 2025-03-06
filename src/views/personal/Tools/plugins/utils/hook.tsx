@@ -1,7 +1,7 @@
 /*
  * @Author: xdteam
  * @Date: 2024-07-25 23:39:32
- * @LastEditTime: 2024-08-03 08:24:47
+ * @LastEditTime: 2025-03-06 19:07:23
  * @LastEditors: YourName
  * @Description:
  * @FilePath: \vue-pure-admin\src\views\personal\Tools\plugins\utils\hook.tsx
@@ -159,17 +159,52 @@ export function useRole() {
     downloadByUrl(product.url, `${product.name}.py`);
   };
 
-  const handleClickInstall = product => {
-    createPluginsApi(product).then(async res => {
+  const handleClickInstall = async (product: any) => {
+    try {
+      const res = await createPluginsApi(product);
+
       if (res.code === 200) {
         onSearch();
         message(`插件 ${product.name} 安装成功，需要手动重启系统重载插件`, {
           type: "success"
         });
+      } else if (res.code === 201) {
+        // 弹出确认框，询问是否强制安装
+        const confirmResult = await ElMessageBox.confirm(
+          `已存在该插件，是否<strong><span style='color:red'>强制安装/更新</span></strong>`,
+          "系统提示",
+          {
+            confirmButtonText: "立即安装",
+            cancelButtonText: "取消",
+            type: "warning",
+            dangerouslyUseHTMLString: true,
+            draggable: true
+          }
+        );
+
+        if (confirmResult === "confirm") {
+          // 强制安装，传递 enforce 参数
+          const enforceRes = await createPluginsApi({
+            ...product,
+            enforce: true
+          });
+
+          if (enforceRes.code === 200) {
+            onSearch();
+            message(
+              `插件 ${product.name} 强制安装成功，需要手动重启系统重载插件`,
+              { type: "success" }
+            );
+          } else {
+            message(`强制安装失败，${enforceRes.message}`, { type: "error" });
+          }
+        }
       } else {
         message(`操作失败，${res.message}`, { type: "error" });
       }
-    });
+    } catch (error) {
+      message(`安装失败，请稍后再试`, { type: "error" });
+    }
   };
 
   function funcRestart() {

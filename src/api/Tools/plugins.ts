@@ -21,12 +21,11 @@ export const getPluginsList = (data?: object) => {
 };
 
 /** 插件添加 */
-export const createPluginsApi = (data?: object) => {
-  return http.request<ResultDetail>("post", "/api/v1/plugins/add", {
+export const createPluginsApi = (data: object) => {
+  return http.request<ResultDetail>("post", `/api/v1/plugins/add`, {
     data: data
   });
 };
-
 /** 插件删除 */
 export const deletePluginsApi = (data?: object) => {
   return http.request<ResultDetail>("delete", "/api/v1/plugins/del", {
