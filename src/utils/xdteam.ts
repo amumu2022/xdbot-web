@@ -1,8 +1,7 @@
 import dayjs from "dayjs";
 import { utils, writeFile } from "xlsx";
 import { message } from "@/utils/message";
-import * as cronParser from 'cron-parser';
-
+import * as cronParser from "cron-parser";
 
 /**
  * 根据现在时间返回文本
@@ -74,11 +73,6 @@ export function get_CodeType(type: string) {
   switch (type) {
     case ".json":
       return "json";
-    case ".lua":
-      return "lua";
-    case ".md":
-    case ".markdown":
-      return "markdown";
     case ".yaml":
     case ".yml":
       return "yaml";
@@ -88,24 +82,21 @@ export function get_CodeType(type: string) {
       return "php";
     case ".sql":
       return "sql";
-    case ".go":
-      return "go";
     case ".html":
     case ".htm":
       return "html";
     case ".js":
       return "javascript";
-    case ".java":
-      return "java";
-    case ".kt":
-    case ".kotlin":
-      return "kotlin";
     case ".py":
       return "python";
     case ".css":
       return "css";
     case ".sh":
       return "shell";
+    case ".toml":
+      return "toml";
+    case ".md":
+      return "markdown";
     default:
       return "plaintext";
   }
@@ -236,7 +227,6 @@ export function unescapeCQCodeParameters(value) {
     .replace(/&amp;/g, "&");
 }
 
-
 /**
  * 解析cron表达式
  * @param str
@@ -244,11 +234,11 @@ export function unescapeCQCodeParameters(value) {
  */
 export function parser_cron(cronExpression: string) {
   // 定义 cron 表达式和选项类型
-    const nowDate = new Date()
+  const nowDate = new Date();
 
   const options: cronParser.ParserOptions = {
-    currentDate: nowDate,  // 当前时间
-    tz: 'Asia/Shanghai'                 // 设置时区（可选）
+    currentDate: nowDate, // 当前时间
+    tz: "Asia/Shanghai" // 设置时区（可选）
   };
 
   try {
@@ -260,8 +250,8 @@ export function parser_cron(cronExpression: string) {
     for (let i = 0; i < 10; i++) {
       dates.push(interval.next().toString());
     }
-    return dates
+    return dates;
   } catch (err) {
-    return [nowDate]
+    return [nowDate];
   }
-  }
+}

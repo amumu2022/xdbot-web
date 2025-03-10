@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import "md-editor-v3/lib/style.css";
-import { defineAsyncComponent } from "vue";
-const scCodeEditor = defineAsyncComponent(
-  () => import("@/components/CodeEditor/CodeEditor.vue")
-);
-
+import CodeEditor from "@/components/MonacoEditor/codeEditor.vue";
 import ReCol from "@/components/ReCol";
 import { formRules } from "./utils/rule";
 import { FormProps } from "./utils/types";
@@ -111,11 +107,10 @@ defineExpose({ getRef });
 
         <el-col :value="24" :xs="24" :sm="24">
           <el-form-item label="脚本内容" prop="code">
-            <sc-code-editor
-              v-model="newFormInline.code"
-              mode="python"
-              theme="darcula"
-              height="550px"
+            <code-editor
+              v-model:code="newFormInline.code"
+              :language="`python`"
+              :height="`550px`"
             />
           </el-form-item>
         </el-col>

@@ -11,7 +11,6 @@ import { useRole } from "./utils/hook";
 const {
   onPageSizeChange,
   onSearch,
-  searchStatus,
   productList,
   pagination,
   form,
@@ -55,7 +54,6 @@ const svg = `
         ref="formRef"
         :inline="true"
         :model="form"
-        v-if="searchStatus"
         class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
         style="
           margin-left: 10px;

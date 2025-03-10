@@ -6,6 +6,9 @@ interface FormItemProps {
   title: string;
   name: string;
   code: string;
+  language?: string; // 默认语言
+  theme?: string; // 默认主题
+  height?: string; // 默认高度
 }
 interface FormProps {
   formInline: FormItemProps;

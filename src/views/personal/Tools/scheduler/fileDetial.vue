@@ -1,19 +1,8 @@
-<!--
- * @Author: xdteam
- * @Date: 2024-04-18 21:36:31
- * @LastEditTime: 2024-04-18 22:10:12
- * @LastEditors: YourName
- * @Description: 
- * 版权声明
--->
 <script setup lang="ts">
 import { ref } from "vue";
-import { defineAsyncComponent } from "vue";
 import ReCol from "@/components/ReCol";
 import { FileItemProps } from "./utils/types";
-const scCodeEditor = defineAsyncComponent(
-  () => import("@/components/CodeEditor/CodeEditor.vue")
-);
+import CodeEditor from "@/components/MonacoEditor/codeEditor.vue";
 
 const ruleFormRef = ref();
 const props = withDefaults(defineProps<FileItemProps>(), {
@@ -44,12 +33,11 @@ defineExpose({ getRef });
         </re-col>
         <el-col :lg="24">
           <el-form-item label="脚本内容" prop="content">
-            <sc-code-editor
+            <code-editor
               read-only
-              v-model="newFormInline.content"
-              mode="python"
-              theme="darcula"
-              height="550px"
+              v-model:code="newFormInline.content"
+              :language="`python`"
+              :height="`550px`"
             />
           </el-form-item>
         </el-col>

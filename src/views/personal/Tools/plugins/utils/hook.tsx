@@ -1,7 +1,7 @@
 /*
  * @Author: xdteam
  * @Date: 2024-07-25 23:39:32
- * @LastEditTime: 2025-03-06 19:07:23
+ * @LastEditTime: 2025-03-07 19:48:19
  * @LastEditors: YourName
  * @Description:
  * @FilePath: \vue-pure-admin\src\views\personal\Tools\plugins\utils\hook.tsx
@@ -29,7 +29,6 @@ import { type FormItemProps } from "./types";
 import { useBasicLayout } from "@/hooks/useBasicLayout";
 import { h, ref, toRaw, reactive, onMounted } from "vue";
 import { ElMessageBox } from "element-plus";
-
 export function useRole() {
   const form = reactive({
     name: "",
@@ -108,7 +107,13 @@ export function useRole() {
   };
 
   const handleClickDetial = product => {
-    message(`${product.name} 还在开发进程中`, { type: "error" });
+    ElMessageBox.alert(
+      product?.desc ? product?.desc : "作者好懒...还没写简介呢",
+      product.name,
+      {
+        confirmButtonText: "好的"
+      }
+    );
   };
 
   const handleClickUpdate = product => {

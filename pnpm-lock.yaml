@@ -53,9 +53,6 @@ importers:
       china-area-data:
         specifier: ^5.0.1
         version: 5.0.1
-      codemirror:
-        specifier: 5.65.5
-        version: 5.65.5
       cron-parser:
         specifier: ^4.9.0
         version: 4.9.0
@@ -98,6 +95,9 @@ importers:
       mockjs:
         specifier: ^1.1.0
         version: 1.1.0
+      monaco-editor:
+        specifier: ^0.52.2
+        version: 0.52.2
       nprogress:
         specifier: ^0.2.0
         version: 0.2.0
@@ -2022,9 +2022,6 @@ packages:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==}
     engines: {iojs: '>= 1.0.0', node: '>= 0.12.0'}
 
-  codemirror@5.65.5:
-    resolution: {integrity: sha512-HNyhvGLnYz5c+kIsB9QKVitiZUevha3ovbIYaQiGzKo7ECSL/elWD9RXt3JgNr0NdnyqE9/Rc/7uLfkJQL638w==}
-
   codepage@1.15.0:
     resolution: {integrity: sha512-3g6NUTPd/YtuuGrhMnOMRjFc+LJw/bnMp3+0r/Wcz3IXUuCosKRJvMphm5+Q+bvTVGcJJuRvVLuYba+WojaFaA==}
     engines: {node: '>=0.8'}
@@ -3647,6 +3644,9 @@ packages:
   mockjs@1.1.0:
     resolution: {integrity: sha512-eQsKcWzIaZzEZ07NuEyO4Nw65g0hdWAyurVol1IPl1gahRwY+svqzfgfey8U8dahLwG44d6/RwEzuK52rSa/JQ==}
     hasBin: true
+
+  monaco-editor@0.52.2:
+    resolution: {integrity: sha512-GEQWEZmfkOGLdd3XK8ryrfWz3AIP8YymVXiPHEdewrUq7mh0qrKrfHLNCXcbB6sTnMLnOZ3ztSiKcciFUkIJwQ==}
 
   mousetrap@1.6.5:
     resolution: {integrity: sha512-QNo4kEepaIBwiT8CDhP98umTetp+JNfQYBWvC1pc6/OAibuXtRcxZ58Qz8skvEHYvURne/7R8T5VoOI7rDsEUA==}
@@ -7635,8 +7635,6 @@ snapshots:
 
   co@4.6.0: {}
 
-  codemirror@5.65.5: {}
-
   codepage@1.15.0: {}
 
   collect-v8-coverage@1.0.2: {}
@@ -9566,6 +9564,8 @@ snapshots:
   mockjs@1.1.0:
     dependencies:
       commander: 11.1.0
+
+  monaco-editor@0.52.2: {}
 
   mousetrap@1.6.5: {}
 

@@ -1,20 +1,19 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import "md-editor-v3/lib/style.css";
-import { defineAsyncComponent } from "vue";
-const scCodeEditor = defineAsyncComponent(
-  () => import("@/components/CodeEditor/CodeEditor.vue")
-);
-
 import ReCol from "@/components/ReCol";
 import { formRules } from "./utils/rule";
 import { FormProps } from "./utils/types";
+import CodeEditor from "@/components/MonacoEditor/codeEditor.vue";
 
+// 定义默认表单数据
 const props = withDefaults(defineProps<FormProps>(), {
   formInline: () => ({
     title: "新增",
     name: "",
-    code: ""
+    code: "// 在此输入代码",
+    language: "python",
+    theme: "hc-black",
+    height: "400px"
   })
 });
 
@@ -27,6 +26,7 @@ function getRef() {
 
 defineExpose({ getRef });
 </script>
+
 <template>
   <el-form
     ref="ruleFormRef"
@@ -37,6 +37,7 @@ defineExpose({ getRef });
   >
     <el-main>
       <el-row :gutter="15">
+        <!-- 函数名输入框 -->
         <re-col :value="24" :xs="24" :sm="24">
           <el-form-item label="函数名" prop="name">
             <el-input
@@ -47,13 +48,14 @@ defineExpose({ getRef });
           </el-form-item>
         </re-col>
 
+        <!-- 函数内容编辑器 -->
         <el-col :value="24" :xs="24" :sm="24">
           <el-form-item label="函数内容" prop="code">
-            <sc-code-editor
-              v-model="newFormInline.code"
-              mode="python"
-              theme="darcula"
-              height="550px"
+            <code-editor
+              v-model:code="newFormInline.code"
+              :language="newFormInline.language"
+              :theme="newFormInline.theme"
+              :height="newFormInline.height"
             />
           </el-form-item>
         </el-col>
@@ -65,8 +67,5 @@ defineExpose({ getRef });
 <style lang="scss" scoped>
 :deep(.el-collapse-item__header) {
   padding-left: 10px;
-}
-.sc-code-editor {
-  width: 100%; /* 这使得编辑器宽度成为父容器宽度的100% */
 }
 </style>

@@ -1,15 +1,20 @@
+<!--
+ * @Author: xdteam
+ * @Date: 2024-05-05 22:54:12
+ * @LastEditTime: 2025-03-10 21:37:39
+ * @LastEditors: YourName
+ * @Description: 
+ * @FilePath: \vue-pure-admin\src\views\web\file\form.vue
+ * 版权声明
+-->
 <script setup lang="ts">
 import { ref } from "vue";
 import ReCol from "@/components/ReCol";
 import { formRules } from "./utils/rule";
 import { FormProps } from "./utils/types";
 import { get_CodeType } from "@/utils/xdteam";
-
 import "md-editor-v3/lib/style.css";
-import { defineAsyncComponent } from "vue";
-const scCodeEditor = defineAsyncComponent(
-  () => import("@/components/CodeEditor/CodeEditor.vue")
-);
+import CodeEditor from "@/components/MonacoEditor/codeEditor.vue";
 const props = withDefaults(defineProps<FormProps>(), {
   formInline: () => ({
     title: "打开",
@@ -62,11 +67,10 @@ defineExpose({ getRef });
             newFormInline.title === '新增文件' || newFormInline.title === '打开'
           "
         >
-          <sc-code-editor
-            v-model="newFormInline.content"
-            :mode="get_CodeType(newFormInline.extension)"
-            theme="darcula"
-            height="550px"
+          <code-editor
+            v-model:code="newFormInline.content"
+            :language="get_CodeType(newFormInline.extension)"
+            :height="`550px`"
           />
         </el-form-item>
       </re-col>

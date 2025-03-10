@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { defineAsyncComponent } from "vue";
-const scCodeEditor = defineAsyncComponent(
-  () => import("@/components/CodeEditor/CodeEditor.vue")
-);
-
+import CodeEditor from "@/components/MonacoEditor/codeEditor.vue";
 import ReCol from "@/components/ReCol";
 import { formRules } from "./utils/rule";
 import { FormProps } from "./utils/types";
@@ -47,11 +43,10 @@ defineExpose({ getRef });
         </re-col>
         <el-col :lg="24">
           <el-form-item label="脚本内容" prop="content">
-            <sc-code-editor
-              v-model="newFormInline.content"
-              mode="python"
-              theme="darcula"
-              height="550px"
+            <code-editor
+              v-model:code="newFormInline.content"
+              :language="`python`"
+              :height="`550px`"
             />
           </el-form-item>
         </el-col>
