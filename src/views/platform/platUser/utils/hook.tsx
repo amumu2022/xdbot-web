@@ -257,7 +257,6 @@ export function useRole(tableRef: Ref) {
         }
         FormRef.validate(valid => {
           if (valid) {
-            
             if (title === "新增") {
               curData.data = JSON.parse(curData.data);
               createMemberApi(curData).then(async res => {

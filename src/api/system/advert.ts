@@ -3,14 +3,14 @@ import { Result, ResultDetail } from "@/api/types";
 
 /** 获取广告列表 */
 export const getAdvertData = (data?: object) => {
-  return http.request<Result>("post", "/api/v1/system/advert/list", { data });
+  return http.request<Result>("post", "/api/system/advert/list", { data });
 };
 
 /** 广告添加 */
 export const createAdvertApi = data => {
   return http.request<ResultDetail>(
     "post",
-    "/api/v1/system/advert/add",
+    "/api/system/advert/add",
     { data },
     {
       headers: {
@@ -22,7 +22,7 @@ export const createAdvertApi = data => {
 
 /** 广告删除 */
 export const deleteAdvertApi = id => {
-  const url = `/api/v1/system/advert/del/${id}`;
+  const url = `/api/system/advert/del/${id}`;
   return http.request<ResultDetail>("delete", url);
 };
 
@@ -30,7 +30,7 @@ export const deleteAdvertApi = id => {
 export const manyDeleteAdvertApi = (data?: object) => {
   return http.request<ResultDetail>(
     "delete",
-    "/api/v1/system/advert/batch_remove",
+    "/api/system/advert/batch_remove",
     {
       data
     }
@@ -39,7 +39,7 @@ export const manyDeleteAdvertApi = (data?: object) => {
 
 /** 更新广告状态 */
 export const UpdateAdvert_status = userId => {
-  const url = `/api/v1/system/advert/${userId}/status`;
+  const url = `/api/system/advert/${userId}/status`;
   return http.request<ResultDetail>("put", url);
 };
 
@@ -47,7 +47,7 @@ export const UpdateAdvert_status = userId => {
 export const UpdateAdvert = (userId: number, data?: object | string) => {
   return http.request<ResultDetail>(
     "put",
-    `/api/v1/system/advert/${userId}/info`,
+    `/api/system/advert/${userId}/info`,
     {
       data
     },

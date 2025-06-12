@@ -3,12 +3,12 @@ import { Result, ResultDetail } from "@/api/types";
 
 /** 获取图片列表 */
 export const getPicData = (data?: object) => {
-  return http.request<Result>("post", "/api/v1/file/photo/list", { data });
+  return http.request<Result>("post", "/api/file/photo/list", { data });
 };
 
 /** 图片添加 */
 export const createPhotoApi = (data?: object) => {
-  return http.request<ResultDetail>("post", `/api/v1/file/photo/add`, {
+  return http.request<ResultDetail>("post", `/api/file/photo/add`, {
     data,
     headers: {
       // 请求头
@@ -19,7 +19,7 @@ export const createPhotoApi = (data?: object) => {
 
 /** 图片删除 */
 export const deletePhotoApi = Id => {
-  const url = `/api/v1/file/photo/del/${Id}`;
+  const url = `/api/file/photo/del/${Id}`;
   return http.request<ResultDetail>("delete", url);
 };
 
@@ -27,7 +27,7 @@ export const deletePhotoApi = Id => {
 export const manyDeletephotoApi = (data?: object) => {
   return http.request<ResultDetail>(
     "delete",
-    "/api/v1/file/photo/batch_remove",
+    "/api/file/photo/batch_remove",
     {
       data
     }
@@ -36,12 +36,12 @@ export const manyDeletephotoApi = (data?: object) => {
 
 /** 获取音频列表 */
 export const getAudioData = (data?: object) => {
-  return http.request<Result>("post", "/api/v1/file/audio/list", { data });
+  return http.request<Result>("post", "/api/file/audio/list", { data });
 };
 
 /** 音频添加 */
 export const createAudioApi = (data?: object) => {
-  return http.request<ResultDetail>("post", `/api/v1/file/audio/add`, {
+  return http.request<ResultDetail>("post", `/api/file/audio/add`, {
     data,
     headers: {
       // 请求头
@@ -52,7 +52,7 @@ export const createAudioApi = (data?: object) => {
 
 /** 音频删除 */
 export const deleteAudioApi = Id => {
-  const url = `/api/v1/file/audio/del/${Id}`;
+  const url = `/api/file/audio/del/${Id}`;
   return http.request<ResultDetail>("delete", url);
 };
 
@@ -60,7 +60,7 @@ export const deleteAudioApi = Id => {
 export const manyDeleteaudioApi = (data?: object) => {
   return http.request<ResultDetail>(
     "delete",
-    "/api/v1/file/audio/batch_remove",
+    "/api/file/audio/batch_remove",
     {
       data
     }
@@ -69,12 +69,12 @@ export const manyDeleteaudioApi = (data?: object) => {
 
 /** 获取文件列表 */
 export const getOtherData = (data?: object) => {
-  return http.request<Result>("post", "/api/v1/file/other/list", { data });
+  return http.request<Result>("post", "/api/file/other/list", { data });
 };
 
 /** 文件添加 */
 export const createOtherApi = (data?: object) => {
-  return http.request<ResultDetail>("post", `/api/v1/file/other/add`, {
+  return http.request<ResultDetail>("post", `/api/file/other/add`, {
     data,
     headers: {
       // 请求头
@@ -85,7 +85,7 @@ export const createOtherApi = (data?: object) => {
 
 /** 文件删除 */
 export const deleteOtherApi = Id => {
-  const url = `/api/v1/file/other/del/${Id}`;
+  const url = `/api/file/other/del/${Id}`;
   return http.request<ResultDetail>("delete", url);
 };
 
@@ -93,7 +93,7 @@ export const deleteOtherApi = Id => {
 export const manyDeleteOtherApi = (data?: object) => {
   return http.request<ResultDetail>(
     "delete",
-    "/api/v1/file/other/batch_remove",
+    "/api/file/other/batch_remove",
     {
       data
     }

@@ -1,60 +1,44 @@
+<!--
+ * @Author: XDTEAM
+ * @Date: 2024-05-05 22:54:11
+ * @LastEditTime: 2025-06-10 22:07:23
+ * @LastEditors: XDTEAM
+ * @Description: 
+-->
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import ReCol from "@/components/ReCol";
+import { formRules } from "./utils/rule";
 import { FormProps } from "./utils/types";
-import IconSelect from "@/components/ReIcon/src/Select.vue";
-import FromQuestion from "@/components/FromQuestion/index.vue";
-import { MenuTypeOptions } from "@/components/constants/constants";
-import { dirFormRules, menuFormRules, permissionFormRules } from "./utils/rule";
+import { IconSelect } from "@/components/ReIcon";
+import Segmented from "@/components/ReSegmented";
+import { menuTypeOptions } from "./utils/enums";
+
 const props = withDefaults(defineProps<FormProps>(), {
   formInline: () => ({
-    higherDeptOptions: [],
-    title: "",
+    open_type: 0,
+    higherMenuOptions: [],
     parent_id: 0,
+    title: "",
     name: "",
-    type: "",
-    code: "",
     url: "",
-    icon: "",
     menu_name: "",
-    open_type: undefined,
-    sort: 0,
-    enable: 0
+    sort: 99,
+    redirect: "",
+    icon: "",
+    code: "",
+    keepAlive: true,
+    showLink: true,
+    showParent: false
   })
 });
-const icon = ref("ep:add-location");
-icon.value = props.formInline.icon ?? "ep:add-location";
 
 const ruleFormRef = ref();
 const newFormInline = ref(props.formInline);
+
 function getRef() {
   return ruleFormRef.value;
 }
-watch(icon, newValue => {
-  // eslint-disable-next-line vue/no-mutating-props
-  props.formInline.icon = newValue;
-});
-const formRules = ref(dirFormRules);
-const handleChangeMenuType = (val: number) => {
-  setTimeout(function () {
-    ruleFormRef.value!.clearValidate([
-      "open_type",
-      "name",
-      "sort",
-      "code",
-      "url",
-      "menu_name"
-    ]);
-  }, 30);
-
-  if (val === 0) {
-    formRules.value = dirFormRules;
-  } else if (val === 1) {
-    formRules.value = menuFormRules;
-  } else {
-    formRules.value = permissionFormRules;
-  }
-};
 
 defineExpose({ getRef });
 </script>
@@ -68,26 +52,29 @@ defineExpose({ getRef });
   >
     <el-row :gutter="30">
       <re-col>
-        <el-form-item label="父级菜单" v-if="newFormInline.open_type !== 0">
-          <template #label>
-            <from-question
-              label="父级"
-              description="父级菜单，操作的菜单在该菜单路径下"
-            />
-          </template>
+        <el-form-item label="菜单类型">
+          <Segmented
+            v-model="newFormInline.open_type"
+            :options="menuTypeOptions"
+          />
+        </el-form-item>
+      </re-col>
+
+      <re-col>
+        <el-form-item v-if="newFormInline.open_type !== 0" label="上级菜单">
           <el-cascader
-            class="w-full"
             v-model="newFormInline.parent_id"
-            :options="newFormInline.higherDeptOptions"
+            class="w-full"
+            :options="newFormInline.higherMenuOptions"
             :props="{
               value: 'id',
               label: 'name',
-              // emiturl: false,
+              emitPath: false,
               checkStrictly: true
             }"
             clearable
             filterable
-            placeholder="请选择父级菜单"
+            placeholder="请选择上级菜单"
           >
             <template #default="{ node, data }">
               <span>{{ data.name }}</span>
@@ -96,10 +83,31 @@ defineExpose({ getRef });
           </el-cascader>
         </el-form-item>
       </re-col>
-    </el-row>
 
-    <el-row :gutter="30">
-      <re-col>
+      <re-col :value="12" :xs="24" :sm="24">
+        <el-form-item label="菜单排序">
+          <el-input-number
+            v-model="newFormInline.sort"
+            class="w-full!"
+            :min="1"
+            :max="9999"
+            controls-position="right"
+          />
+        </el-form-item>
+      </re-col>
+
+      <re-col
+        v-show="newFormInline.open_type !== 3"
+        :value="12"
+        :xs="24"
+        :sm="24"
+      >
+        <el-form-item label="菜单图标">
+          <IconSelect v-model="newFormInline.icon" class="w-full" />
+        </el-form-item>
+      </re-col>
+
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="菜单名称" prop="name">
           <el-input
             v-model="newFormInline.name"
@@ -108,10 +116,9 @@ defineExpose({ getRef });
           />
         </el-form-item>
       </re-col>
-    </el-row>
 
-    <el-row :gutter="30">
-      <re-col>
+      <re-col :value="12" :xs="24" :sm="24">
+        <!-- 按钮级别权限设置 -->
         <el-form-item label="权限标识" prop="code">
           <el-input
             v-model="newFormInline.code"
@@ -120,9 +127,26 @@ defineExpose({ getRef });
           />
         </el-form-item>
       </re-col>
-    </el-row>
 
-    <el-row :gutter="30">
+      <re-col
+        v-if="newFormInline.open_type !== 3"
+        :value="12"
+        :xs="24"
+        :sm="24"
+      >
+        <el-form-item
+          v-if="newFormInline.open_type == 1"
+          label="组件名称"
+          prop="menu_name"
+        >
+          <el-input
+            v-model="newFormInline.menu_name"
+            clearable
+            placeholder="请输入组件定义的name，defineOptions中的name"
+          />
+        </el-form-item>
+      </re-col>
+
       <template
         v-if="newFormInline.open_type == 0 || newFormInline.open_type == 1"
       >
@@ -132,18 +156,6 @@ defineExpose({ getRef });
               v-model="newFormInline.url"
               clearable
               placeholder="请输入前端项目views文件内的页面路径"
-            />
-          </el-form-item>
-        </re-col>
-      </template>
-
-      <template v-if="newFormInline.open_type == 1">
-        <re-col>
-          <el-form-item label="菜单组件" prop="menu_name">
-            <el-input
-              v-model="newFormInline.menu_name"
-              clearable
-              placeholder="请输入组件定义的name，defineOptions中的name"
             />
           </el-form-item>
         </re-col>
@@ -172,43 +184,44 @@ defineExpose({ getRef });
           </el-form-item>
         </re-col>
       </template>
-    </el-row>
 
-    <el-row :gutter="30">
-      <re-col>
-        <el-form-item label="打开方式" prop="open_type">
-          <el-radio-group
-            v-model="newFormInline.open_type"
-            @change="handleChangeMenuType"
-          >
-            <el-radio-button
-              v-for="(item, index) in MenuTypeOptions"
-              :label="item.value"
-              :key="index"
-              >{{ item.label }}</el-radio-button
-            >
-          </el-radio-group>
+      <!-- <re-col
+        v-show="newFormInline.open_type !== 3"
+        :value="12"
+        :xs="24"
+        :sm="24"
+      >
+        <el-form-item label="菜单">
+          <Segmented
+            :modelValue="newFormInline.showLink ? 0 : 1"
+            :options="showLinkOptions"
+            @change="
+              ({ option: { value } }) => {
+                newFormInline.showLink = value;
+              }
+            "
+          />
         </el-form-item>
       </re-col>
-    </el-row>
 
-    <el-row :gutter="30">
-      <re-col :gutter="30">
-        <el-form-item label="菜单图标" prop="icon">
-          <IconSelect v-model="icon" style="width: 100%" />
+      <re-col
+        v-show="newFormInline.open_type < 2"
+        :value="12"
+        :xs="24"
+        :sm="24"
+      >
+        <el-form-item label="缓存页面">
+          <Segmented
+            :modelValue="newFormInline.keepAlive ? 0 : 1"
+            :options="keepAliveOptions"
+            @change="
+              ({ option: { value } }) => {
+                newFormInline.keepAlive = value;
+              }
+            "
+          />
         </el-form-item>
-      </re-col>
+      </re-col> -->
     </el-row>
-
-    <re-col :gutter="30">
-      <el-form-item label="排序">
-        <el-input-number
-          v-model="newFormInline.sort"
-          :min="0"
-          :max="9999"
-          controls-position="right"
-        />
-      </el-form-item>
-    </re-col>
   </el-form>
 </template>

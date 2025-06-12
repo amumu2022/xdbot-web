@@ -179,7 +179,7 @@ export function useDept() {
 
   async function onSearch() {
     loading.value = true;
-    const { data } = await getRoutesData(); // 这里是返回一维数组结构，前端自行处理成树结构，返回格式要求：唯一id加父节点parentId，parentId取父节点id
+    const { data } = await getRoutesData(); // 这里是返回一维数组结构，前端自行处理成树结构，返回格式要求：唯一id加父节点parent_id，parent_id取父节点id
     let newData = data;
     if (!isAllEmpty(form.name)) {
       // 前端搜索菜单名称
@@ -213,7 +213,7 @@ export function useDept() {
       props: {
         formInline: {
           title,
-          higherDeptOptions: formatHigherDeptOptions(cloneDeep(dataList.value)),
+          higherMenuOptions: formatHigherDeptOptions(cloneDeep(dataList.value)),
           parent_id: row?.parent_id ?? "0",
           name: row?.name ?? "",
           url: row?.url ?? "",
@@ -221,8 +221,7 @@ export function useDept() {
           code: row?.code ?? "",
           open_type: row?.open_type ?? 0,
           icon: row?.icon ?? "ep:add-location",
-          sort: row?.sort ?? 1,
-          enable: row?.enable ?? 1
+          sort: row?.sort ?? 1
         }
       },
       width: "40%",
@@ -243,7 +242,7 @@ export function useDept() {
         }
         FormRef.validate(valid => {
           if (valid) {
-            delete curData.higherDeptOptions;
+            delete curData.higherMenuOptions;
 
             if (title === "新增") {
               createMenuApi(curData).then(async res => {

@@ -1,95 +1,97 @@
-import { useOnebot11 } from "@/utils/onebot11";
-const { RecvData, SendData, NoticeData } = useOnebot11();
-import { getWsLogList } from "@/api/system/monitor";
-import { useWebSocket } from "@/utils/websocket";
-import { message } from "@/utils/message";
-import { ref } from "vue";
-
-const { connectWs, CloseWs } = useWebSocket();
-const { pushLog } = useOnebot11();
-
 export interface ListItem {
+  avatar: string;
   title: string;
-  bot_id: string;
-  nickname: string;
-  title2: string;
-  message: string;
   datetime: string;
+  type: string;
+  description: string;
+  status?: "primary" | "success" | "warning" | "info" | "danger";
   extra?: string;
-  status?: "" | "success" | "warning" | "info" | "danger";
 }
 
 export interface TabItem {
   key: string;
   name: string;
-  list: any[];
+  list: ListItem[];
+  emptyText: string;
 }
 
-const realData = [
+export const noticesData: TabItem[] = [
   {
     key: "1",
-    name: "发信",
-    list: SendData.value
+    name: "通知",
+    list: [],
+    emptyText: "暂无通知"
   },
   {
     key: "2",
     name: "消息",
-    list: RecvData.value
+    list: [
+      {
+        avatar: "https://xiaoxian521.github.io/hyperlink/svg/smile1.svg",
+        title: "小铭 评论了你",
+        description: "诚在于心，信在于行，诚信在于心行合一。",
+        datetime: "今天",
+        type: "2"
+      },
+      {
+        avatar: "https://xiaoxian521.github.io/hyperlink/svg/smile2.svg",
+        title: "李白 回复了你",
+        description: "长风破浪会有时，直挂云帆济沧海。",
+        datetime: "昨天",
+        type: "2"
+      },
+      {
+        avatar: "https://xiaoxian521.github.io/hyperlink/svg/smile5.svg",
+        title: "标题",
+        description:
+          "请将鼠标移动到此处，以便测试超长的消息在此处将如何处理。本例中设置的描述最大行数为2，超过2行的描述内容将被省略并且可以通过tooltip查看完整内容",
+        datetime: "时间",
+        type: "2"
+      }
+    ],
+    emptyText: "暂无消息"
   },
   {
     key: "3",
-    name: "事件",
-    list: NoticeData.value
+    name: "待办",
+    list: [
+      {
+        avatar: "",
+        title: "第三方紧急代码变更",
+        description:
+          "小林提交于 2024-05-10，需在 2024-05-11 前完成代码变更任务",
+        datetime: "",
+        extra: "马上到期",
+        status: "danger",
+        type: "3"
+      },
+      {
+        avatar: "",
+        title: "版本发布",
+        description: "指派小铭于 2024-06-18 前完成更新并发布",
+        datetime: "",
+        extra: "已耗时 8 天",
+        status: "warning",
+        type: "3"
+      },
+      {
+        avatar: "",
+        title: "新功能开发",
+        description: "开发多租户管理",
+        datetime: "",
+        extra: "进行中",
+        type: "3"
+      },
+      {
+        avatar: "",
+        title: "任务名称",
+        description: "任务需要在 2030-10-30 10:00 前启动",
+        datetime: "",
+        extra: "未开始",
+        status: "info",
+        type: "3"
+      }
+    ],
+    emptyText: "暂无待办"
   }
 ];
-export const noticesData: TabItem[] = realData;
-
-export const ws_status = ref(false);
-/**
- * 增强的WebSocket连接函数
- * @param {string} ws_url - WebSocket服务器地址
- * @param {Function} [onMessage] - 消息接收回调函数（可选）
- * @param {Function} [onOpen] - 连接成功回调函数（可选）
- * @param {Function} [onClose] - 连接关闭回调函数（可选）
- * @returns {Promise<void>}
- */
-export const connectWsEnhanced = async (ws_url: string) => {
-  if (ws_status.value) {
-    message("不能重复建立连接", { type: "warning" });
-  }
-
-  await connectWs(
-    ws_url,
-    onMessage,
-    async socket => {
-      // 连接打开时的操作
-      onOpen(socket);
-    },
-    () => onClose(ws_url)
-  );
-};
-
-export function onMessage(msg_event: { data: string }) {
-  const json_data = JSON.parse(msg_event.data);
-  pushLog(json_data.params);
-}
-
-export async function onOpen(_socket) {
-  // 连接打开时的操作
-  ws_status.value = true;
-  message("连接建立成功啦", { type: "success" });
-  try {
-    const response = await getWsLogList();
-    const { data } = response;
-    data.forEach(logEntry => pushLog(logEntry));
-  } catch (error) {
-    console.error("获取日志列表时发生错误:", error);
-  }
-}
-
-export function onClose(ws_url: string) {
-  // 连接关闭时的操作
-  CloseWs(ws_url);
-  ws_status.value = false;
-  message("连接已断开", { type: "error" });
-}

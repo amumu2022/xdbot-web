@@ -3,19 +3,19 @@ import { Result, ResultDetail } from "@/api/types";
 
 /** 获取卡密列表 */
 export const getSkeyData = (data?: object) => {
-  return http.request<Result>("post", "/api/v1/account/skey/list", { data });
+  return http.request<Result>("post", "/api/account/skey/list", { data });
 };
 
 /** 卡密添加 */
 export const createSkeyApi = (data?: object) => {
-  return http.request<ResultDetail>("post", "/api/v1/account/skey/add", {
+  return http.request<ResultDetail>("post", "/api/account/skey/add", {
     data
   });
 };
 
 /** 卡密删除 */
 export const deleteSkeyApi = Id => {
-  const url = `/api/v1/account/skey/del/${Id}`;
+  const url = `/api/account/skey/del/${Id}`;
   return http.request<ResultDetail>("delete", url);
 };
 
@@ -23,7 +23,7 @@ export const deleteSkeyApi = Id => {
 export const manyDeleteSkeyApi = (data?: object) => {
   return http.request<ResultDetail>(
     "delete",
-    "/api/v1/account/skey/batch_remove",
+    "/api/account/skey/batch_remove",
     {
       data
     }
@@ -32,7 +32,7 @@ export const manyDeleteSkeyApi = (data?: object) => {
 
 /** 更新卡密状态 */
 export const UpdateSkey_status = userId => {
-  const url = `/api/v1/account/skey/${userId}/status`;
+  const url = `/api/account/skey/${userId}/status`;
   return http.request<ResultDetail>("put", url);
 };
 
@@ -40,7 +40,7 @@ export const UpdateSkey_status = userId => {
 export const UpdateSkey = (userId: number, data?: object | string) => {
   return http.request<ResultDetail>(
     "put",
-    `/api/v1/account/skey/${userId}/info`,
+    `/api/account/skey/${userId}/info`,
     {
       data
     }

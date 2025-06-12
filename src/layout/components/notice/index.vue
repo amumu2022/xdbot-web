@@ -1,71 +1,42 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { noticesData, ws_status, connectWsEnhanced } from "./data";
-import NoticeList from "./noticeList.vue";
-import Bell from "@iconify-icons/ep/bell";
+import { ref, computed } from "vue";
+import { noticesData } from "./data";
+import NoticeList from "./components/NoticeList.vue";
+import BellIcon from "@iconify-icons/ep/bell";
 
-import { useRouter } from "vue-router";
-import { storageLocal } from "@pureadmin/utils";
-import { ElMessage, ElMessageBox } from "element-plus";
-
+const noticesNum = ref(0);
 const notices = ref(noticesData);
-const activeKey = ref(noticesData[0].key);
+const activeKey = ref(noticesData[0]?.key);
 
-interface StorageConfigs {
-  ws_url: string;
-}
+notices.value.map(v => (noticesNum.value += v.list.length));
 
-//初始化ws连接
-function get() {
-  const router = useRouter();
-
-  const ws_url = storageLocal().getItem<StorageConfigs>("FrameSet")?.ws_url;
-
-  if (ws_url) {
-    if (!ws_status.value) {
-      connectWsEnhanced(ws_url);
-    }
-  } else {
-    ElMessageBox.confirm("ws地址尚未配置，是否跳转配置", "Warning", {
-      confirmButtonText: "前往",
-      cancelButtonText: "取消",
-      type: "warning"
-    })
-      .then(() => {
-        router.push({ name: "PlatFormFrame" });
-        ElMessage({
-          type: "info",
-          message: "请点击框架设置按钮进行设置"
-        });
-      })
-      .catch(() => {
-        ElMessage({
-          type: "warning",
-          message: "配置ws后才能输出日志哦~"
-        });
-      });
-  }
-}
-
-onMounted(() => {
-  get();
-});
+const getLabel = computed(
+  () => item =>
+    item.name + (item.list.length > 0 ? `(${item.list.length})` : "")
+);
 </script>
 
 <template>
   <el-dropdown trigger="click" placement="bottom-end">
-    <span class="dropdown-badge navbar-bg-hover select-none">
-      <el-badge value="new" class="item">
+    <span
+      :class="[
+        'dropdown-badge',
+        'navbar-bg-hover',
+        'select-none',
+        Number(noticesNum) !== 0 && 'mr-[10px]'
+      ]"
+    >
+      <el-badge :value="Number(noticesNum) === 0 ? '' : noticesNum" :max="99">
         <span class="header-notice-icon">
-          <IconifyIconOffline :icon="Bell" />
+          <IconifyIconOffline :icon="BellIcon" />
         </span>
       </el-badge>
     </span>
     <template #dropdown>
       <el-dropdown-menu>
         <el-tabs
-          :stretch="true"
           v-model="activeKey"
+          :stretch="true"
           class="dropdown-tabs"
           :style="{ width: notices.length === 0 ? '200px' : '330px' }"
         >
@@ -76,13 +47,10 @@ onMounted(() => {
           />
           <span v-else>
             <template v-for="item in notices" :key="item.key">
-              <el-tab-pane
-                :label="`${item.name}(${item.list.length})`"
-                :name="`${item.key}`"
-              >
+              <el-tab-pane :label="getLabel(item)" :name="`${item.key}`">
                 <el-scrollbar max-height="330px">
                   <div class="noticeList-container">
-                    <NoticeList :list="item.list" />
+                    <NoticeList :list="item.list" :emptyText="item.emptyText" />
                   </div>
                 </el-scrollbar>
               </el-tab-pane>
@@ -101,7 +69,6 @@ onMounted(() => {
   justify-content: center;
   width: 40px;
   height: 48px;
-  margin-right: 10px;
   cursor: pointer;
 
   .header-notice-icon {

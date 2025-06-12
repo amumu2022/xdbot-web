@@ -12,6 +12,20 @@ export const REGEXP_PWD =
 
 /** 登录校验 */
 const loginRules = reactive(<FormRules>{
+  username: [
+    {
+      validator: (rule, value, callback) => {
+        if (value === "") {
+          callback(new Error("请输入用户账号"));
+        } else if (value.length > 10) {
+          callback(new Error("用户名不得长于10个字符"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur"
+    }
+  ],
   password: [
     {
       validator: (rule, value, callback) => {
@@ -84,20 +98,6 @@ const updateRules = reactive<FormRules>({
           callback(new Error("请输入手机号"));
         } else if (!isPhone(value)) {
           callback(new Error("请输入正确的手机号码格式"));
-        } else {
-          callback();
-        }
-      },
-      trigger: "blur"
-    }
-  ],
-  verifyCode: [
-    {
-      validator: (rule, value, callback) => {
-        if (value === "") {
-          callback(new Error("请输入验证码"));
-        } else if (!REGEXP_SIX.test(value)) {
-          callback(new Error("请输入6位数字验证码"));
         } else {
           callback();
         }

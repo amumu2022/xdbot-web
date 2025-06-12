@@ -28,7 +28,7 @@ export type Result_PRI = {
 
 /** 获取函数列表 */
 export const getFuncData = (data?: object) => {
-  return http.request<Result>("post", "/api/v1/features/custom_func/list", {
+  return http.request<Result>("post", "/api/features/custom_func/list", {
     data
   });
 };
@@ -37,7 +37,7 @@ export const getFuncData = (data?: object) => {
 export const createFuncApi = (data?: object) => {
   return http.request<ResultDetail>(
     "post",
-    "/api/v1/features/custom_func/add",
+    "/api/features/custom_func/add",
     {
       data: data
     }
@@ -46,7 +46,7 @@ export const createFuncApi = (data?: object) => {
 
 /** 函数删除 */
 export const deleteFuncApi = Id => {
-  const url = `/api/v1/features/custom_func/del/${Id}`;
+  const url = `/api/features/custom_func/del/${Id}`;
   return http.request<ResultDetail>("delete", url);
 };
 
@@ -54,7 +54,7 @@ export const deleteFuncApi = Id => {
 export const manyDeleteFuncApi = (data?: object) => {
   return http.request<ResultDetail>(
     "delete",
-    "/api/v1/features/custom_func/batch_remove",
+    "/api/features/custom_func/batch_remove",
     {
       data
     }
@@ -63,7 +63,7 @@ export const manyDeleteFuncApi = (data?: object) => {
 
 /** 更新函数状态 */
 export const UpdateFunc_status = userId => {
-  const url = `/api/v1/features/custom_func/${userId}/status`;
+  const url = `/api/features/custom_func/${userId}/status`;
   return http.request<ResultDetail>("put", url);
 };
 
@@ -71,7 +71,7 @@ export const UpdateFunc_status = userId => {
 export const UpdateFunc = (userId: number, data?: object | string) => {
   return http.request<ResultDetail>(
     "put",
-    `/api/v1/features/custom_func/${userId}/info`,
+    `/api/features/custom_func/${userId}/info`,
     {
       data: data
     }

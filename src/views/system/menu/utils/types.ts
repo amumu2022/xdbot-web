@@ -1,18 +1,20 @@
 interface FormItemProps {
-  higherDeptOptions: Record<string, unknown>[];
-  id?: number;
-  /** 用于判断是`新增`还是`修改` */
-  title: string;
+  /** 菜单类型（0代表菜单、1代表iframe、2代表外链、3代表按钮）*/
+  open_type: number;
+  higherMenuOptions: Record<string, unknown>[];
   parent_id: number;
+  id?: number;
+  title: string;
   name: string;
-  type: string;
-  code: string;
-  icon: string;
   url: string;
   menu_name: string;
-  open_type: string | number;
   sort: number;
-  enable: number;
+  redirect: string;
+  icon: string;
+  code: string;
+  // keepAlive: boolean;
+  // showLink: boolean;
+  // showParent: boolean;
 }
 interface FormProps {
   formInline: FormItemProps;

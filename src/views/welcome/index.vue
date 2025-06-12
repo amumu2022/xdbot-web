@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 import TypeIt from "@/components/ReTypeit";
 import { onMounted, ref, computed, markRaw } from "vue";
 import Github from "./components/Github.vue";
 import Dashboard from "./components/dashboard.vue";
 import BotInfo from "./components/BotOnline.vue";
-import { randomColor } from "@pureadmin/utils";
-import { useRenderFlicker } from "@/components/ReFlicker";
-import { getVersionData } from "@/api/system/version";
+// import { randomColor } from "@pureadmin/utils";
+// import { useRenderFlicker } from "@/components/ReFlicker";
+// import { getVersionData } from "@/api/system/version";
 import MdEditor from "md-editor-v3";
 
 defineOptions({
@@ -25,32 +25,32 @@ setTimeout(() => {
   loading.value = !loading.value;
 }, 800);
 
-function RenderingLog() {
-  const post_data = {
-    version: "",
-    content: "",
-    enable: "",
-    currentPage: 1,
-    pageSize: 100
-  };
-  getVersionData(post_data).then(({ data }) => {
-    latestNewsData.value = data.results.map(v => {
-      return {
-        content: v.content,
-        timestamp: dayjs(v.update_time).format("YYYY/MM/DD hh:mm:ss A"),
-        icon: markRaw(
-          useRenderFlicker({
-            background: randomColor({ type: "hex" }) as string
-          })
-        )
-      };
-    });
-  });
-}
+// function RenderingLog() {
+//   const post_data = {
+//     version: "",
+//     content: "",
+//     enable: "",
+//     currentPage: 1,
+//     pageSize: 100
+//   };
+//   getVersionData(post_data).then(({ data }) => {
+//     latestNewsData.value = data.results.map(v => {
+//       return {
+//         content: v.content,
+//         timestamp: dayjs(v.update_time).format("YYYY/MM/DD hh:mm:ss A"),
+//         icon: markRaw(
+//           useRenderFlicker({
+//             background: randomColor({ type: "hex" }) as string
+//           })
+//         )
+//       };
+//     });
+//   });
+// }
 
-onMounted(() => {
-  RenderingLog();
-});
+// onMounted(() => {
+//   RenderingLog();
+// });
 </script>
 
 <template>

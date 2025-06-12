@@ -19,12 +19,12 @@ export type Result_PRI = {
 
 /** 获取音乐列表 */
 export const getMusicData = (data?: object) => {
-  return http.request<Result_PRI>("post", "/api/v1/tools/music", { data });
+  return http.request<Result_PRI>("post", "/api/tools/music", { data });
 };
 
 /** 获取接口列表 */
 export const getApiData = (data?: object) => {
-  return http.request<Result>("post", "/api/v1/features/custom_api", { data });
+  return http.request<Result>("post", "/api/features/custom_api", { data });
 };
 
 /** API运行 */
@@ -33,7 +33,7 @@ export const RunAPI = (data: any) => {
   const value_num = value.split("#").length - 1;
   data.value_num = value_num;
   console.log(value_num);
-  return http.request<ResultDetail>("post", "/api/v1/features/custom_api/run", {
+  return http.request<ResultDetail>("post", "/api/features/custom_api/run", {
     data
   });
 };
@@ -43,14 +43,14 @@ export const createAPI = (data: any) => {
   const value = data.test;
   const value_num = value.split("#").length - 1;
   data.value_num = value_num;
-  return http.request<ResultDetail>("post", "/api/v1/features/custom_api/add", {
+  return http.request<ResultDetail>("post", "/api/features/custom_api/add", {
     data
   });
 };
 
 /** API删除 */
 export const deleteAPI = Id => {
-  const url = `/api/v1/features/custom_api/del/${Id}`;
+  const url = `/api/features/custom_api/del/${Id}`;
   return http.request<ResultDetail>("delete", url);
 };
 
@@ -58,7 +58,7 @@ export const deleteAPI = Id => {
 export const manyDeleteAPI = (data?: object) => {
   return http.request<ResultDetail>(
     "delete",
-    "/api/v1/features/custom_api/batch_remove",
+    "/api/features/custom_api/batch_remove",
     {
       data
     }
@@ -67,7 +67,7 @@ export const manyDeleteAPI = (data?: object) => {
 
 /** 更新API状态 */
 export const UpdateAPI_status = userId => {
-  const url = `/api/v1/features/custom_api/${userId}/status`;
+  const url = `/api/features/custom_api/${userId}/status`;
   return http.request<ResultDetail>("put", url);
 };
 
@@ -79,7 +79,7 @@ export const UpdateAPI = (userId: number, data?: any) => {
   data.value_num = value_num;
   return http.request<ResultDetail>(
     "put",
-    `/api/v1/features/custom_api/${userId}/info`,
+    `/api/features/custom_api/${userId}/info`,
     {
       data
     }

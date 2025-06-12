@@ -28,20 +28,20 @@ export type Result_PRI = {
 
 /** 获取漂流瓶列表 */
 export const getBottleData = (data?: object) => {
-  return http.request<Result>("post", "/api/v1/game/bottle/list", {
+  return http.request<Result>("post", "/api/game/bottle/list", {
     data
   });
 };
 
 /** 漂流瓶删除 */
 export const deleteBottleApi = Id => {
-  const url = `/api/v1/game/bottle/del/${Id}`;
+  const url = `/api/game/bottle/del/${Id}`;
   return http.request<ResultDetail>("delete", url);
 };
 
 /** 更新漂流瓶状态 */
 export const UpdateBottle_status = (id: number, toggle?: string | number) => {
-  const url = `/api/v1/game/bottle/${id}/status?toggle=${toggle}`;
+  const url = `/api/game/bottle/${id}/status?toggle=${toggle}`;
   return http.request<ResultDetail>("put", url);
 };
 
@@ -49,7 +49,7 @@ export const UpdateBottle_status = (id: number, toggle?: string | number) => {
 export const UpdateBottle = (userId: number, data?: object | string) => {
   return http.request<ResultDetail>(
     "put",
-    `/api/v1/game/bottle/${userId}/info`,
+    `/api/game/bottle/${userId}/info`,
     {
       data: data
     }

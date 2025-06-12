@@ -15,6 +15,7 @@ import { getToken, formatToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
 import { message } from "@/utils/message";
 import router from "@/router";
+import { EventSourcePolyfill } from "event-source-polyfill";
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
   // 请求超时时间
@@ -74,7 +75,7 @@ class PureHttp {
           return config;
         }
         /** 请求白名单，放置一些不需要token的接口（通过设置请求白名单，防止token过期后再请求造成的死循环问题） */
-        const whiteList = ["/api/v1/user/refreshToken", "/login"];
+        const whiteList = ["/api/user/refreshToken", "/login"];
         return whiteList.find(url => url === config.url)
           ? config
           : new Promise(resolve => {
@@ -225,6 +226,22 @@ class PureHttp {
         ...config
       }
     );
+  }
+
+  /** 添加支持 SSE 的方法 */
+  public sse(url: string): EventSource {
+    const token = getToken()?.accessToken;
+    const headers: Record<string, string> = {};
+
+    if (token) {
+      headers["Authorization"] = formatToken(token);
+    }
+
+    return new EventSourcePolyfill(url, {
+      headers: headers,
+      withCredentials: true, // 如果需要携带cookie
+      heartbeatTimeout: 120000 // 心跳超时时间，默认2分钟
+    });
   }
 }
 

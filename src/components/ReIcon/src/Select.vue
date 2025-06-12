@@ -36,8 +36,12 @@ const tabsList = [
     name: "ep:"
   },
   {
-    label: "Font Awesome 4",
-    name: "fa:"
+    label: "彩色图标",
+    name: "token-branded:"
+  },
+  {
+    label: "Remix Icon",
+    name: "ri:"
   },
   {
     label: "Font Awesome 5 Solid",

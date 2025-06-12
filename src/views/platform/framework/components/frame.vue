@@ -5,7 +5,7 @@ import { useBasicLayout } from "@/hooks/useBasicLayout";
 import { h } from "vue";
 import ExchangeCard from "./FrameChildren/ExchangeCard.vue";
 import Sign from "./FrameChildren/Sign.vue";
-import frameSet from "./FrameChildren/FrameSet.vue";
+// import frameSet from "./FrameChildren/FrameSet.vue";
 import Text2Pic from "./FrameChildren/TextToPic.vue";
 import Empty from "./FrameChildren/Empty.vue";
 
@@ -68,8 +68,6 @@ const handleManageProduct = (product: Product) => {
     component = Text2Pic;
   } else if (product.index == 3) {
     component = ExchangeCard;
-  } else if (product.index == 4) {
-    component = frameSet;
   } else if (product.index == 5) {
     component = Sign;
   }
