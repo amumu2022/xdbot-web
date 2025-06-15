@@ -108,8 +108,8 @@ const formatDate = dateString => {
 }
 
 .user-profile {
-  width: 100%;
-  max-width: 600px; /* 调整卡片宽度 */
+  flex: 1; /* 让卡片可以自适应增长 */
+  max-width: 6000px; /* 最大宽度 */
   border: 1px solid #ebebeb;
   border-radius: 10px;
   padding: 15px; /* 减小上下内边距 */
@@ -168,7 +168,7 @@ const formatDate = dateString => {
 }
 
 .detail-item b {
-  font-size: 1.125rem;
+  font-size: 0.8rem;
   color: #333;
 }
 

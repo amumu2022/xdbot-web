@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // import dayjs from "dayjs";
 import TypeIt from "@/components/ReTypeit";
-import { onMounted, ref, computed, markRaw } from "vue";
+import { ref, computed } from "vue";
 import Github from "./components/Github.vue";
 import Dashboard from "./components/dashboard.vue";
 import BotInfo from "./components/BotOnline.vue";
@@ -9,6 +9,7 @@ import BotInfo from "./components/BotOnline.vue";
 // import { useRenderFlicker } from "@/components/ReFlicker";
 // import { getVersionData } from "@/api/system/version";
 import MdEditor from "md-editor-v3";
+import ReCol from "@/components/ReCol";
 
 defineOptions({
   name: "Welcome"
@@ -55,28 +56,31 @@ setTimeout(() => {
 
 <template>
   <div>
-    <el-row :gutter="24">
-      <el-col
-        :xs="24"
-        :sm="24"
-        :md="12"
-        :lg="12"
-        :xl="12"
-        class="mb-[18px]"
-        v-motion
-        :initial="{
-          opacity: 0,
-          y: 100
-        }"
-        :enter="{
-          opacity: 1,
-          y: 0,
-          transition: {
-            delay: 200
-          }
-        }"
-      >
-        <el-card shadow="hover">
+    <el-row :gutter="24" justify="space-around">
+      <re-col class="mb-[18px]" :value="18" :xs="24">
+        <el-card shadow="hover" class="equal-height-card">
+          <template #header>
+            <a
+              :class="titleClass"
+              href="https://www.cnblogs.com/xdteam/"
+              target="_black"
+            >
+              <TypeIt
+                :className="'type-it3'"
+                :values="[`状态面板`]"
+                :cursor="false"
+                :speed="60"
+              />
+            </a>
+          </template>
+          <el-scrollbar max-height="280">
+            <Dashboard />
+          </el-scrollbar>
+        </el-card>
+      </re-col>
+
+      <re-col v-motion class="mb-[18px]" :value="6" :xs="24">
+        <el-card shadow="hover" class="equal-height-card">
           <template #header>
             <a
               :class="titleClass"
@@ -95,49 +99,9 @@ setTimeout(() => {
             <BotInfo />
           </el-scrollbar>
         </el-card>
-      </el-col>
+      </re-col>
 
-      <el-col
-        :xs="24"
-        :sm="24"
-        :md="12"
-        :lg="12"
-        :xl="12"
-        class="mb-[18px]"
-        v-motion
-        :initial="{
-          opacity: 0,
-          y: 100
-        }"
-        :enter="{
-          opacity: 1,
-          y: 0,
-          transition: {
-            delay: 200
-          }
-        }"
-      >
-        <el-card shadow="hover">
-          <template #header>
-            <a
-              :class="titleClass"
-              href="https://www.cnblogs.com/xdteam/"
-              target="_black"
-            >
-              <TypeIt
-                :className="'type-it3'"
-                :values="[`状态面板`]"
-                :cursor="false"
-                :speed="60"
-              />
-            </a>
-          </template>
-
-          <Dashboard />
-        </el-card>
-      </el-col>
-
-      <el-col
+      <re-col
         :xs="24"
         :sm="24"
         :md="12"
@@ -190,9 +154,9 @@ setTimeout(() => {
             </template>
           </el-skeleton>
         </el-card>
-      </el-col>
+      </re-col>
 
-      <el-col
+      <re-col
         :xs="24"
         :sm="24"
         :md="12"
@@ -235,7 +199,7 @@ setTimeout(() => {
             </template>
           </el-skeleton>
         </el-card>
-      </el-col>
+      </re-col>
     </el-row>
   </div>
 </template>
@@ -261,5 +225,20 @@ setTimeout(() => {
   max-width: 100%;
   max-height: 100%;
   display: block; /* 防止图片下方有间隙 */
+}
+
+.equal-height-card {
+  height: 350px; // 设置固定高度
+  display: flex;
+  flex-direction: column;
+
+  :deep(.el-card__body) {
+    flex: 1;
+    overflow: hidden;
+
+    .el-scrollbar {
+      height: 100%;
+    }
+  }
 }
 </style>

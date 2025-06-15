@@ -27,15 +27,11 @@ import { useAppStoreHook } from "@/store/modules/app";
 import { toggleTheme } from "@pureadmin/theme/dist/browser-utils";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
-import { restartCode } from "@/api/system/monitor";
-import { ElMessageBox } from "element-plus";
-import { message } from "@/utils/message";
 
 import dayIcon from "@/assets/svg/day.svg?component";
 import darkIcon from "@/assets/svg/dark.svg?component";
 import Check from "@iconify-icons/ep/check";
 import Logout from "@iconify-icons/ri/logout-circle-r-line";
-import RestartFill from "@iconify-icons/ri/restart-fill";
 
 const router = useRouter();
 const { isDark } = useDark();
@@ -45,25 +41,6 @@ const { $storage } = useGlobal<GlobalPropertiesApi>();
 const mixRef = ref();
 const verticalRef = ref();
 const horizontalRef = ref();
-
-function funcRestart() {
-  ElMessageBox.confirm(
-    `请确定是否<strong><span style='color:red'>立即重启系统</span></strong>`,
-    "系统提示",
-    {
-      confirmButtonText: "立即重启",
-      cancelButtonText: "取消",
-      type: "warning",
-      dangerouslyUseHTMLString: true,
-      draggable: true
-    }
-  ).then(() => {
-    message(`系统重启中`, {
-      type: "warning"
-    });
-    restartCode();
-  });
-}
 
 const {
   dataTheme,
@@ -420,19 +397,6 @@ onBeforeMount(() => {
         style="margin-right: 4px"
       />
       清除缓存
-    </el-button>
-    <el-button
-      type="warning"
-      style="width: 90%; margin: 2px 15px"
-      @click="funcRestart"
-    >
-      <IconifyIconOffline
-        :icon="RestartFill"
-        width="15"
-        height="15"
-        style="margin-right: 4px"
-      />
-      重启系统
     </el-button>
   </panel>
 </template>

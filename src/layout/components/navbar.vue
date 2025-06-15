@@ -2,6 +2,7 @@
 import Search from "./search/index.vue";
 import Notice from "./notice/index.vue";
 import mixNav from "./sidebar/mixNav.vue";
+import restart from "./restart/index.vue";
 import { useNav } from "@/layout/hooks/useNav";
 import Breadcrumb from "./sidebar/breadCrumb.vue";
 import topCollapse from "./sidebar/topCollapse.vue";
@@ -39,6 +40,8 @@ const {
     <mixNav v-if="layout === 'mix'" />
 
     <div v-if="layout === 'vertical'" class="vertical-header-right">
+      <!-- 重启 -->
+      <restart />
       <!-- 菜单搜索 -->
       <Search />
       <!-- 通知 -->

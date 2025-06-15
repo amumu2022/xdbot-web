@@ -9,24 +9,24 @@
 -->
 <script setup lang="ts">
 import { useBoolean } from "../../hooks/useBoolean";
-import RestartFill from "@iconify-icons/ri/restart-fill";
+import PowerFill from "@iconify-icons/ri/shut-down-line";
 import { restartCode } from "@/api/system/monitor";
 import { ElMessageBox } from "element-plus";
 import { message } from "@/utils/message";
 
-function funcRestart() {
+function handlePowerOff() {
   ElMessageBox.confirm(
-    `请确定是否<strong><span style='color:red'>立即重启系统</span></strong>`,
+    `请确定是否<strong><span style='color:red'>立即关闭系统</span></strong>`,
     "系统提示",
     {
-      confirmButtonText: "立即重启",
+      confirmButtonText: "确认关闭",
       cancelButtonText: "取消",
       type: "warning",
       dangerouslyUseHTMLString: true,
       draggable: true
     }
   ).then(() => {
-    message(`系统重启中`, {
+    message(`系统正在关闭`, {
       type: "warning"
     });
     restartCode();
@@ -39,9 +39,15 @@ const { bool: show } = useBoolean();
 <template>
   <div
     class="search-container w-[40px] h-[48px] flex-c cursor-pointer navbar-bg-hover"
-    @click="funcRestart"
+    @click="handlePowerOff"
   >
-    <IconifyIconOffline :icon="RestartFill" />
+    <IconifyIconOffline :icon="PowerFill" />
   </div>
   <SearchModal v-model:value="show" />
 </template>
+
+<style scoped>
+.search-container:hover {
+  color: var(--el-color-danger); /* hover时显示红色，突出危险操作 */
+}
+</style>

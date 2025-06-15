@@ -1,3 +1,10 @@
+<!--
+ * @Author: XDTEAM
+ * @Date: 2024-05-05 22:54:11
+ * @LastEditTime: 2025-06-14 23:32:54
+ * @LastEditors: XDTEAM
+ * @Description: 
+-->
 <script setup lang="ts">
 import ReCol from "@/components/ReCol";
 import { ref, watch } from "vue";

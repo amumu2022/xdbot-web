@@ -20,7 +20,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="dashboard" id="app">
+  <div class="dashboard-container">
     <!-- 骨架屏 -->
     <el-skeleton animated :rows="6" :loading="loading">
       <!-- 实际数据 -->
@@ -73,16 +73,27 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* 添加容器样式 */
+.dashboard-container {
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* 修改第二行的margin */
+:deep(.el-row) {
+  margin-top: 20px !important;
+}
+
 .stats-card {
   background: #fff;
   text-align: center;
-  padding: 30px;
+  padding: 15px; /* 调整内边距，使整体更协调 */
   border-radius: 5px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 .stats-card h3 {
   font-weight: bold;
-  margin: 10px 0;
+  margin: 15px 0;
 }
 .stats-card p {
   font-size: 14px;
@@ -92,5 +103,15 @@ onUnmounted(() => {
 .stats-card h3 {
   color: #666;
   margin: 0px;
+}
+
+@media screen and (max-width: 768px) {
+  .dashboard-container {
+    padding: 15px;
+  }
+
+  .stats-card {
+    padding: 15px;
+  }
 }
 </style>
